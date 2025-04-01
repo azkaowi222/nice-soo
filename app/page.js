@@ -1,9 +1,16 @@
-export default function Home() {
+import TopSlider from "./components/top-slider/slider";
+import Category from "./components/category-product/Category";
+import NewProduct from "./components/new-product/NewProduct";
+import products from "./lib/products";
+const Home = async () => {
+  const data = await products();
   return (
     <div>
-      {/* <h1 className="text-3xl font-bold underline text-green-400">
-        ini Homepage
-      </h1> */}
+      <TopSlider />
+      <Category />
+      <NewProduct data={data} newProduct={true} />
     </div>
   );
-}
+};
+
+export default Home;

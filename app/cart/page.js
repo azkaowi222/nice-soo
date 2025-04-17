@@ -1,27 +1,45 @@
 "use client";
-import { ShoppingCart } from "react-feather";
+import { Link, ShoppingCart } from "react-feather";
 import { ChevronLeft, Trash2, MapPin } from "lucide-react";
 import Image from "next/image";
-import Quantity from "../components/quantity-selector/Quantity";
-import { useState } from "react";
-const Cart = ({ products = true }) => {
-  const [quantity, setQuantity] = useState(1);
+import { useEffect, useState } from "react";
+import Title from "../components/title/Title";
+import React from "react";
+const Cart = () => {
+  const [products, setProducts] = useState([]);
+  const [subTotal, setSubTotal] = useState(null);
 
-  const decreaseQuantity = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
+  const handleDelete = (id) => {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    const newCart = cart.filter((product) => product.id !== id);
+    localStorage.setItem("cart", JSON.stringify(newCart));
+    setProducts(newCart);
   };
 
-  const increaseQuantity = () => {
-    setQuantity(quantity + 1);
-  };
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    setProducts(cart);
+    setSubTotal(
+      cart?.reduce(
+        (acc, product) => acc + Number(product.price) * product.quantity,
+        0
+      )
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!products) return;
+    const subtotal = products.reduce(
+      (acc, product) => acc + Number(product.price) * product.quantity,
+      0
+    );
+    setSubTotal(subtotal);
+  }, [products]);
+
   return (
     <>
-      <div className="px-2 py-5 shadow-md bg-white">
-        <h1 className="text-xl font-semibold spacing tracking-wider text-center">
-          Keranjang Belanja
-        </h1>
-      </div>
-      {!products ? (
+      <Title title={"Keranjang Belanja"} />
+      {true ? (
         <div className="flex flex-col gap-8 justify-center items-center h-[458px]">
           <div className="flex flex-col gap-3">
             <ShoppingCart size={150} color="gray" />
@@ -34,45 +52,59 @@ const Cart = ({ products = true }) => {
             <div className="back-btn mt-2 flex justify-center">
               <a
                 href="/"
-                className="px-4 py-2 rounded-md cursor-pointer flex items-center border gap-2"
+                className="px-4 py-2 rounded-md cursor-pointer flex items-center border border-black gap-2"
               >
                 <ChevronLeft size={22} />
                 Lanjutkan Belanja
               </a>
             </div>
             <div className="cart-items mt-16 flex flex-col gap-10">
-              <div className="cart flex flex-col gap-4 justify-center">
-                <hr className="w-full text-gray-300" />
-                <div className="item-box flex gap-4">
-                  <Image
-                    src={"/images/tupperware.jpg"}
-                    width={150}
-                    height={150}
-                    alt="Product Image Cart"
-                    className="object-cover aspect-square rounded-md"
-                  />
-                  <div className="item-info w-full relative">
-                    <div>
-                      <h2 className="text-xl font-semibold">Tupperware Emak</h2>
-                      <p className="mt-3 mb-6 text-lg">Rp. 10.000</p>
+              {products.map((product, index) => {
+                return (
+                  <div
+                    className="cart flex flex-col gap-4 justify-center"
+                    key={index}
+                  >
+                    <hr className="w-full text-gray-300" />
+                    <div className="item-box flex gap-4">
+                      <div className="img-box w-[120px] border-b-2 border-t-2 border-gray-300 flex items-center rounded-md">
+                        <Image
+                          src={"/images/tupperware.jpg"}
+                          width={0}
+                          height={0}
+                          layout="responsive"
+                          // fill
+                          alt="Product Image Cart"
+                          className="object-cover aspect-square rounded-md"
+                        />
+                      </div>
+                      <div className="item-info w-full relative">
+                        <div>
+                          <h2 className="text-lg font-semibold">
+                            {product.name}
+                          </h2>
+                          <p className="mt-3">Rp. {product.price}</p>
+                          <p className="mt-3">Ukuran: {product.size}</p>
+                        </div>
+                        <div className="price flex justify-between items-center mt-3">
+                          <span>Total Produk: {product.quantity}</span>
+                          <p className="text-xl">
+                            Rp. {product.price * product.quantity}
+                          </p>
+                        </div>
+                        <Trash2
+                          size={20}
+                          color="red"
+                          onClick={() => handleDelete(product.id)}
+                          className="cursor-pointer absolute top-2 right-2"
+                        />
+                      </div>
                     </div>
-                    <div className="price flex justify-between items-center">
-                      <Quantity
-                        decreaseQuantity={decreaseQuantity}
-                        quantity={quantity}
-                        increaseQuantity={increaseQuantity}
-                      />
-                      <p className="text-xl">Rp. {10000 * quantity}</p>
-                    </div>
-                    <Trash2
-                      size={20}
-                      color="red"
-                      className="cursor-pointer absolute top-2 right-2"
-                    />
+                    <hr className="w-full text-gray-300" />
                   </div>
-                </div>
-                <hr className="w-full text-gray-300" />
-              </div>
+                );
+              })}
+
               <div className="cupon flex flex-col gap-4">
                 <input
                   type="text"
@@ -90,7 +122,7 @@ const Cart = ({ products = true }) => {
               <hr className="w-full text-gray-300" />
               <div className="subtotal flex justify-between items-center">
                 <h2>Subtotal</h2>
-                <p>Rp. {10000 * quantity}</p>
+                <p>Rp. {subTotal}</p>
               </div>
               <hr className="w-full text-gray-300" />
               <div className="admin-tax flex justify-between items-center">
@@ -120,7 +152,7 @@ const Cart = ({ products = true }) => {
 
               <div className="total flex justify-between items-center mb-4">
                 <h2>Total</h2>
-                <p>Rp. {10000 * quantity + 5000}</p>
+                <p>Rp. {subTotal + 5000}</p>
               </div>
               <button className="bg-[#282828] text-white p-4 cursor-pointer rounded-md">
                 Bayar

@@ -26,7 +26,7 @@ const Login = () => {
             ></input>
             <label
               htmlFor="email"
-              className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+              className="absolute top-3 left-4 transition-all duration-300 ease-in-out pointer-events-none"
             >
               Email *
             </label>
@@ -41,7 +41,7 @@ const Login = () => {
             ></input>
             <label
               htmlFor="password"
-              className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+              className="absolute top-3 left-4 transition-all duration-300 ease-in-out pointer-events-none"
             >
               Password *
             </label>

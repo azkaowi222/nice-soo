@@ -13,7 +13,7 @@ const NewProduct = ({ data, newProduct }) => {
             currency: "USD",
           }).format(Number(item.price));
           return (
-            <div key={index} className="box-item md:w-40">
+            <a href="/product" key={index} className="box-item md:w-40">
               <Image
                 src={item.image}
                 width={400}
@@ -25,7 +25,7 @@ const NewProduct = ({ data, newProduct }) => {
                 <h2 className="text-sm font-semibold mt-2">{item.title}</h2>
               </div>
               <p className="text-sm mt-2">{price}</p>
-            </div>
+            </a>
           );
         })}
       </div>

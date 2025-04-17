@@ -37,7 +37,7 @@ const Register = () => {
               ></input>
               <label
                 htmlFor="firstName"
-                className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+                className="absolute top-3 left-4 transition-all duration-300 ease-in-out pointer-events-none"
               >
                 Nama Depan *
               </label>
@@ -52,7 +52,7 @@ const Register = () => {
               ></input>
               <label
                 htmlFor="lastName"
-                className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+                className="absolute top-3 left-4 transition-all duration-300 ease-in-out pointer-events-none"
               >
                 Nama Belakang *
               </label>
@@ -68,7 +68,7 @@ const Register = () => {
             ></input>
             <label
               htmlFor="email"
-              className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+              className="absolute top-3 left-4 transition-all duration-300 ease-in-out pointer-events-none"
             >
               Email *
             </label>
@@ -83,7 +83,7 @@ const Register = () => {
             ></input>
             <label
               htmlFor="password"  
-              className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+              className="absolute top-3 left-4 transition-all duration-300 ease-in-out pointer-events-none"
             >
               Password *
             </label>

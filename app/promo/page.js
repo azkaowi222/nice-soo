@@ -1,12 +1,10 @@
 import Image from "next/image";
+import Title from "../components/title/Title";
+import React from "react";
 const Promo = ({ products }) => {
   return (
     <>
-      <div className="px-2 py-5 shadow-md bg-white">
-        <h1 className="text-xl font-semibold spacing tracking-wider text-center">
-          Promo Hari Ini
-        </h1>
-      </div>
+      <Title title={"Promo Hari Ini"} />
       {!products ? (
         <div className="flex flex-col gap-8 justify-center items-center h-[458px]">
           <div className="flex flex-col gap-3 justify-center items-center">

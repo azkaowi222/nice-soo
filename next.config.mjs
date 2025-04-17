@@ -15,6 +15,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "fakestoreapi.com",
       },
+      {
+        protocol: "https",
+        hostname: "makanbang.id",
+      },
     ],
   },
 };

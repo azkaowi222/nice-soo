@@ -3,6 +3,7 @@ import Image from "next/image";
 import NavItems from "../nav-items/NavItems";
 import { useState } from "react";
 import Logo from "../../logo/Logo";
+import React from "react";
 
 const TopNavbar = () => {
   const [open, setIsOpen] = useState(false);

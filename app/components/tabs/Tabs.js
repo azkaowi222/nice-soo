@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
+import React from "react";
 const Tabs = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [activeStar, setActiveStar] = useState(0);
@@ -113,7 +114,6 @@ const Tabs = () => {
                   />
                 </div>
                 <textarea
-                  type="text"
                   name="rating"
                   id="rating"
                   placeholder="Tulis ulasan anda disini..."

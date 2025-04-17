@@ -6,6 +6,7 @@ const Logo = () => {
         <Image
           className="md:w-20 w-18 aspect-square object-cover cursor-pointer md:block"
           src={"/images/niceso-tp.png"}
+          priority={true}
           alt="logo"
           width={100}
           height={50}

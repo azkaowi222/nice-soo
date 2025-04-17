@@ -1,18 +1,27 @@
 import { Plus, Minus } from "lucide-react";
-const Quantity = ({ decreaseQuantity, quantity, increaseQuantity }) => {
+const Quantity = ({ quantity, setQuantity }) => {
+  const decreaseQuantity = () => {
+    if (quantity > 1) setQuantity(quantity - 1);
+  };
+
+  const increaseQuantity = () => {
+    setQuantity(quantity + 1);
+  };
   return (
-    <div className="border border-gray-300 inline-flex items-center justify-center py-0.5 rounded-md">
-      <Minus
-        size={40}
-        onClick={decreaseQuantity}
-        className="px-3 text-gray-600 text-lg hover:text-black cursor-pointer"
-      />
-      <span className="mx-4 text-lg">{quantity}</span>
-      <Plus
-        size={40}
-        onClick={increaseQuantity}
-        className="px-3 text-gray-600 text-lg hover:text-black cursor-pointer"
-      />
+    <div className="border border-gray-300 inline-flex items-center justify-center rounded-md">
+      <div className="flex items-center justify-center px-2 py-1 gap-4">
+        <Minus
+          size={18}
+          onClick={decreaseQuantity}
+          className="text-gray-600 text-lg hover:text-black cursor-pointer"
+        />
+        <span className="text-lg">{quantity}</span>
+        <Plus
+          size={18}
+          onClick={increaseQuantity}
+          className="text-gray-600 text-lg hover:text-black cursor-pointer"
+        />
+      </div>
     </div>
   );
 };

@@ -1,8 +1,10 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 import { usePathname } from "next/navigation";
 import { Home, ShoppingCart, Tag, LogIn } from "react-feather";
 import Image from "next/image";
 import Navbox from "./nav-box/Navbox";
+import React from "react";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -13,6 +15,7 @@ const Navbar = () => {
           <Image
             className="md:w-20 w-18 aspect-square object-cover cursor-pointer md:block"
             src={"/images/niceso-tp.png"}
+            priority={true}
             alt="logo"
             width={100}
             height={50}

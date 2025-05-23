@@ -49,6 +49,10 @@ const Register = () => {
     redirect("/login");
   };
 
+  const handleLoginGoogle = async () => {
+    window.location.href = "http://localhost:8000/api/auth/google";
+  };
+
   useEffect(() => {
     if (alert) {
       const timer = setTimeout(() => {
@@ -173,7 +177,10 @@ const Register = () => {
                 value="Daftar"
               />
               <span className="text-gray-500 tracking-widest">Atau</span>
-              <button className="flex justify-center items-center border w-full p-2.5 gap-2 bg-white rounded-2xl cursor-pointer">
+              <button
+                onClick={handleLoginGoogle}
+                className="flex justify-center items-center border w-full p-2.5 gap-2 bg-white rounded-2xl cursor-pointer"
+              >
                 <Image
                   src={"/images/google.png"}
                   alt={"google"}

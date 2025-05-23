@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Title from "../components/title/Title";
 import {
@@ -7,7 +9,34 @@ import {
   UserRoundCog,
   Star,
 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
+import Loader from "../components/loader/Loader";
+import getUser from "../utils/getUser";
 const Profile = () => {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogOut = async () => {
+    setIsLoading(true);
+    const token = localStorage.getItem("token");
+    await fetch("http://localhost:8000/api/logout", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    localStorage.clear();
+    setIsLoading(false);
+    redirect("/login");
+  };
+
+  useEffect(() => {
+    getUser()
+      .then((user) => setUser(user))
+      .catch((err) => console.log(err));
+  }, []);
   return (
     <>
       <Title title={"Akun"} />
@@ -25,8 +54,10 @@ const Profile = () => {
             </div>
           </div>
           <div className="name -mt-3 flex flex-col items-center">
-            <h1 className="text-lg">Arman Maulana</h1>
-            <p className="text-[#A98C8A]">maximkelly659@gmail.com</p>
+            <h1 className="text-lg">{user?.email}</h1>
+            <p className="text-[#A98C8A]">
+              {user?.first_name} {user?.last_name}
+            </p>
           </div>
         </div>
         <div className="btn-act">
@@ -61,10 +92,14 @@ const Profile = () => {
             <ChevronRight size={20} />
           </a>
         </div>
-        <button className="bg-[#A98C8A] p-3 mt-4 w-full rounded-md cursor-pointer">
+        <button
+          onClick={handleLogOut}
+          className="bg-[#A98C8A] p-3 mt-4 w-full rounded-md cursor-pointer"
+        >
           Keluar
         </button>
       </div>
+      <Loader isLoading={isLoading} />
     </>
   );
 };

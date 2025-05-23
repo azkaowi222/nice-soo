@@ -16,7 +16,7 @@
 }
 
 body {
-  background-color: #f9f7f7;
+  background-color: #f9f7f5;
 }
 
 .hamburger-item:nth-child(1) {
@@ -82,16 +82,24 @@ body {
   display: none;
 }
 
-#email {
+#email,
+#nameOfOrder,
+#message {
   outline: none;
 }
 
-#email:focus {
+#email:focus,
+#nameOfOrder:focus,
+#message:focus {
   border: 2px solid #0d92f4;
 }
 
 #email:focus ~ label,
-#email:valid ~ label {
+#email:valid ~ label,
+#nameOfOrder ~ label,
+#nameOfOrder ~ label,
+#message:focus ~ label,
+#message:valid ~ label {
   position: absolute;
   top: -12px;
   left: 12px;
@@ -114,6 +122,25 @@ body {
 #password:valid ~ label,
 #new-password:focus ~ label,
 #new-password:valid ~ label {
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  padding: 0 7px;
+  color: #0d92f4;
+  font-size: 16px;
+  background: linear-gradient(to bottom, #f9f7f7, #ffffff);
+}
+
+#confirm_password {
+  outline: none;
+}
+
+#confirm_password:focus {
+  border: 2px solid #0d92f4;
+}
+
+#confirm_password:focus ~ label,
+#confirm_password:valid ~ label {
   position: absolute;
   top: -12px;
   left: 12px;
@@ -187,6 +214,32 @@ body {
 .rating-tab,
 .products-title {
   animation: fadeIn 0.5s ease-in-out;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 15px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: l5 1s infinite linear alternate;
+}
+@keyframes l5 {
+  0% {
+    box-shadow: 20px 0 #000, -20px 0 #0002;
+    background: #000;
+  }
+  33% {
+    box-shadow: 20px 0 #000, -20px 0 #0002;
+    background: #0002;
+  }
+  66% {
+    box-shadow: 20px 0 #0002, -20px 0 #000;
+    background: #0002;
+  }
+  100% {
+    box-shadow: 20px 0 #0002, -20px 0 #000;
+    background: #000;
+  }
 }
 
 @keyframes fadeIn {

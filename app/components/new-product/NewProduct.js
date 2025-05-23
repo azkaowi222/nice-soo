@@ -1,4 +1,5 @@
 import Image from "next/image";
+import React from "react";
 const NewProduct = ({ data, newProduct }) => {
   //   console.log(data);
   return (

@@ -29,7 +29,6 @@ export default function DialogDemo() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add product</DialogTitle>
-          <DialogDescription>Lorem*15</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
@@ -49,12 +48,8 @@ export default function DialogDemo() {
             <Input id="username" className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username">Image</Label>
-            <Input
-              type={"file"}
-              id="username"
-              className="col-span-3 border-none"
-            />
+            <Label htmlFor="image">Image</Label>
+            <Input type={"file"} id="image" className="col-span-3" />
           </div>
         </div>
         <DialogFooter>

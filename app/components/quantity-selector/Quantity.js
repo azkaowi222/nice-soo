@@ -1,4 +1,5 @@
 import { Plus, Minus } from "lucide-react";
+import React from "react";
 const Quantity = ({ quantity, setQuantity }) => {
   const decreaseQuantity = () => {
     if (quantity > 1) setQuantity(quantity - 1);

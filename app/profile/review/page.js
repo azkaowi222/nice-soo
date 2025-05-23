@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
+import React from "react";
 const Review = () => {
   return (
     <div className="p-4">

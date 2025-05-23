@@ -7,7 +7,7 @@ import Navbar from "../navbar/Navbar";
 
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
-  const hideNavbarRoutes = ["/dashboard", "/admin"];
+  const hideNavbarRoutes = ["/dashboard", "/admin", "/checkout"];
   const showNavbar = !hideNavbarRoutes.some((path) =>
     pathname.startsWith(path)
   );

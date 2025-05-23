@@ -11,12 +11,12 @@ import Quantity from "../components/quantity-selector/Quantity";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import React from "react";
 const Product = () => {
   const [imageWidth, setImageWidth] = useState(null);
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [size, setSize] = useState(null);
-  const [subTotal, setSubTotal] = useState(null);
   const imageRef = useRef(null);
   const nameRef = useRef(null);
   const priceRef = useRef(null);
@@ -164,7 +164,7 @@ const Product = () => {
         <h2>Kategori: Alat Dapur, Peralatan Rumah Tangga.</h2>
       </div>
       <Tabs />
-      <NewProduct data={products} />
+      <NewProduct data={products} newProduct={false} />
     </section>
   );
 };

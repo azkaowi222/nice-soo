@@ -7,16 +7,18 @@ const BodyWrapper = ({ children }) => {
   const pathname = usePathname();
 
   // Tambahkan kondisi di sini
-  const isAdminPage = pathname.startsWith("/dashboard/admin");
+  const isAdminOrCheckoutPage =
+    pathname.startsWith("/dashboard/admin") || pathname.startsWith("/checkout");
 
   //   const customClass = isAdminPage
   //     ? "" // class khusus admin
   //     : "bg-white text-neutral-800"; // default
-
   return (
     <body
       className={`${
-        isAdminPage ? "pt-0 pb-0 antialiased relative md:pt-22" : "pt-20 pb-20"
+        isAdminOrCheckoutPage
+          ? "pt-0 pb-0 antialiased relative md:pt-22"
+          : "pt-20 pb-20"
       } antialiased relative md:pt-22`}
     >
       {children}

@@ -1,5 +1,6 @@
 // "use client";
 import Logo from "@/app/components/logo/Logo";
+import React from "react";
 import { X, MapPin, Users, ArrowRight, Gift, UserPlus } from "react-feather";
 
 const NavItems = ({ isOpen = false, setIsOpen }) => {

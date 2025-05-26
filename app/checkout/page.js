@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Title from "../components/title/Title";
 import { Ellipsis, Notebook, Trash2, TicketPercent, Truck } from "lucide-react";
@@ -7,6 +9,39 @@ import { ChevronRight, MapPin } from "react-feather";
 const Checkout = () => {
   const product = {};
   const user = {};
+
+  // Misalnya di file: pages/checkout.tsx atau komponen CheckoutForm.tsx
+  const handleCheckout = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8000/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          // accept: "application/json", // jika pakai auth token
+        },
+        body: JSON.stringify({
+          shipping_address: "Jl. Merdeka No. 123, Jakarta",
+          shipping_cost: 10000,
+          promo_code: null,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        console.log("Checkout sukses:", data);
+        // redirect user ke Midtrans payment page:
+        window.location.href = data.payment_url;
+      } else {
+        console.error("Gagal checkout:", data.message);
+      }
+    } catch (error) {
+      console.error("Error saat checkout:", error);
+    }
+  };
+
   return (
     <div>
       <Title title={"Checkout"} center={false} hasIcon={true} />
@@ -146,7 +181,10 @@ const Checkout = () => {
           <h2>Total</h2>
           <p>Rp. {0 + 5000}</p>
         </div>
-        <button className="bg-[#282828] text-white p-4 cursor-pointer rounded-md">
+        <button
+          onClick={handleCheckout}
+          className="bg-[#282828] text-white p-4 cursor-pointer rounded-md"
+        >
           Bayar
         </button>
       </div>

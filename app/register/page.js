@@ -178,6 +178,7 @@ const Register = () => {
               />
               <span className="text-gray-500 tracking-widest">Atau</span>
               <button
+                type="button"
                 onClick={handleLoginGoogle}
                 className="flex justify-center items-center border w-full p-2.5 gap-2 bg-white rounded-2xl cursor-pointer"
               >

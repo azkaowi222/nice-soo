@@ -12,8 +12,10 @@ import {
   CalendarDays,
   MapPinned,
   Venus,
+  X,
 } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
+import { ChevronDown, ChevronUp } from "react-feather";
 
 const InfoProfile = () => {
   const [user, setUser] = useState({
@@ -29,10 +31,41 @@ const InfoProfile = () => {
   const [isShowOverlay, setIsShowOverlay] = useState(false);
   const [editingField, setEditingField] = useState(null);
   const [isEditGender, setIsEditGender] = useState(false);
-  const [activeGender, setActiveGender] = useState("male");
+  const [activeGender, setActiveGender] = useState(null);
   const [shouldSave, setShouldSave] = useState(false);
   const [isInputDate, setIsInputDate] = useState(false);
+  const [isInputAdress, setIsInputAdress] = useState(false);
   const [birthDate, setBirthDate] = useState(null);
+  const [isShowProvince, setIsShowProvince] = useState(false);
+  const [isShowRegency, setIsShowRegency] = useState(false);
+  const [isShowSubdistrict, setIsShowSubdistrict] = useState(false);
+  const [RegencyValue, setRegencyValue] = useState("");
+  const [provinceValue, setProvinceValue] = useState("");
+  const [subdistrictValue, setSubdistrictValue] = useState("");
+  const [listProvince, setListProvince] = useState([
+    {
+      id: null,
+      name: null,
+    },
+  ]);
+  const [initProvince, setInitProvince] = useState([
+    {
+      id: null,
+      name: null,
+    },
+  ]);
+  const [listRegencies, setListRegencies] = useState([
+    {
+      id: null,
+      name: null,
+    },
+  ]);
+  const [listSubdistrict, setLisSubdistrict] = useState([
+    {
+      id: null,
+      name: null,
+    },
+  ]);
   const ref = useRef(null);
 
   const handleEdit = (field, value) => {
@@ -42,6 +75,63 @@ const InfoProfile = () => {
       [field]: value,
     }));
   };
+
+  const getRegencies = async (id) => {
+    const response = await fetch(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${id}.json`
+    );
+    const data = await response.json();
+    setListRegencies(data);
+  };
+
+  const getSubdistrict = async (id) => {
+    const response = await fetch(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${id}.json`
+    );
+    const data = await response.json();
+    setLisSubdistrict(data);
+  };
+
+  // const listProvince = [
+  //   "Aceh",
+  //   "Sumatera Utara",
+  //   "Sumatera Barat",
+  //   "Riau",
+  //   "Kepulauan Riau",
+  //   "Jambi",
+  //   "Sumatera Selatan",
+  //   "Bangka Belitung",
+  //   "Bengkulu",
+  //   "Lampung",
+  //   "DKI Jakarta",
+  //   "Jawa Barat",
+  //   "Banten",
+  //   "Jawa Tengah",
+  //   "DI Yogyakarta",
+  //   "Jawa Timur",
+  //   "Bali",
+  //   "Nusa Tenggara Barat",
+  //   "Nusa Tenggara Timur",
+  //   "Kalimantan Barat",
+  //   "Kalimantan Tengah",
+  //   "Kalimantan Selatan",
+  //   "Kalimantan Timur",
+  //   "Kalimantan Utara",
+  //   "Sulawesi Utara",
+  //   "Gorontalo",
+  //   "Sulawesi Tengah",
+  //   "Sulawesi Barat",
+  //   "Sulawesi Selatan",
+  //   "Sulawesi Tenggara",
+  //   "Maluku",
+  //   "Maluku Utara",
+  //   "Papua Barat",
+  //   "Papua Barat Daya",
+  //   "Papua",
+  //   "Papua Tengah",
+  //   "Papua Pegunungan",
+  //   "Papua Selatan",
+  // ].sort();
 
   const handleBirthDateChange = (e) => {
     setBirthDate(e.target.value);
@@ -59,12 +149,12 @@ const InfoProfile = () => {
       },
       body: JSON.stringify({
         ...user,
-        gender: activeGender,
+        gender: activeGender ?? user.gender,
         birth_date: birthDate ?? user.birth_date,
+        address: user.address,
       }),
     });
     const data = await response.json();
-    console.log(data);
     setUser((prev) => ({
       ...prev,
       gender: data?.user?.gender,
@@ -119,7 +209,10 @@ const InfoProfile = () => {
         onSubmit={(e) => {
           e.preventDefault();
           if (ref.current.value.trim() === "") return;
-          handleEdit(fieldKey, ref.current.value);
+          handleEdit(
+            fieldKey,
+            `${ref.current.value} ${RegencyValue} ${subdistrictValue} ${provinceValue}`
+          );
           setShouldSave(true);
         }}
       >
@@ -144,8 +237,231 @@ const InfoProfile = () => {
                 required
               ></input>
             )}
+            {isInputAdress && (
+              <>
+                <div className="province-box relative my-3">
+                  <input
+                    onClick={() => {
+                      setIsShowProvince(true);
+                    }}
+                    value={provinceValue}
+                    id="email"
+                    onChange={(e) => {
+                      setProvinceValue(e.target.value);
+                      const filterProvince = listProvince.filter((item) => {
+                        return item.name.startsWith(
+                          e.target.value.toUpperCase()
+                        );
+                      });
+                      if (e.target.value === "" || !e.target.value) {
+                        setListProvince(initProvince);
+                        return;
+                      }
+                      setListProvince(filterProvince);
+                    }}
+                    // value={FormData[fieldKey] || ""}
+                    className="border p-3 rounded-sm w-full bg-white"
+                    required
+                  />
+                  <div
+                    className={`absolute ${
+                      isShowProvince ? "block" : "hidden"
+                    } top-full h-[360px] overflow-y-auto z-10 border w-full text-center bg-white rounded-sm shadow-md`}
+                  >
+                    <ul>
+                      {listProvince
+                        ?.sort((a, b) => a.name.localeCompare(b.name))
+                        .map((item, index) => {
+                          return (
+                            <li
+                              onClick={() => {
+                                setProvinceValue(item.name);
+                                setIsShowProvince(false);
+                                getRegencies(item.id);
+                              }}
+                              className="my-2 shadow-sm cursor-pointer active:bg-gray-300 py-1.5 rounded-sm flex items-center justify-center"
+                              key={index}
+                            >
+                              {item.name}
+                            </li>
+                          );
+                        })}
+                    </ul>
+                  </div>
+
+                  <label
+                    htmlFor="email"
+                    className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+                  >
+                    Provinsi
+                  </label>
+
+                  <div className="absolute right-10 top-1.5 rounded-full p-2 active:bg-gray-300">
+                    <X
+                      className="cursor-pointer"
+                      size={20}
+                      onClick={() => setProvinceValue("")}
+                    />
+                  </div>
+                  {!isShowProvince ? (
+                    <ChevronDown
+                      className="absolute right-4 top-3 cursor-pointer"
+                      onClick={() => {
+                        setIsShowProvince(true);
+                        setIsShowRegency(false);
+                      }}
+                    />
+                  ) : (
+                    <ChevronUp
+                      className="absolute right-4 top-3 cursor-pointer"
+                      onClick={() => {
+                        setIsShowProvince(false);
+                      }}
+                    />
+                  )}
+                </div>
+                <div className="Regency-box relative my-3">
+                  <input
+                    onClick={() => {
+                      setIsShowRegency(
+                        listRegencies.length <= 1 ? false : true
+                      );
+                    }}
+                    value={RegencyValue}
+                    id="email"
+                    onChange={() => {}}
+                    // value={FormData[fieldKey] || ""}
+                    className={`border p-3 rounded-sm w-full bg-white`}
+                    required
+                  />
+                  <div
+                    className={`absolute ${
+                      isShowRegency ? "block" : "hidden"
+                    } top-full h-[300px] overflow-y-auto z-10 border w-full text-center bg-white rounded-sm shadow-md`}
+                  >
+                    <ul>
+                      {listRegencies?.map((item, index) => {
+                        return (
+                          <li
+                            onClick={() => {
+                              setRegencyValue(item.name);
+                              setIsShowRegency(false);
+                              getSubdistrict(item.id);
+                            }}
+                            className="my-2 cursor-pointer shadow-sm active:bg-gray-300 py-1.5 rounded-sm flex items-center justify-center"
+                            key={index}
+                          >
+                            {item.name}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+
+                  <label
+                    htmlFor="email"
+                    className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+                  >
+                    Kabupaten / Kota
+                  </label>
+
+                  <div className="absolute right-10 top-1.5 rounded-full p-2 active:bg-gray-300">
+                    <X
+                      className="cursor-pointer"
+                      size={20}
+                      onClick={() => setRegencyValue("")}
+                    />
+                  </div>
+                  {!isShowRegency ? (
+                    <ChevronDown
+                      color={listRegencies.length === 1 ? "gray" : "black"}
+                      className={`absolute right-4 top-3 cursor-pointer`}
+                      onClick={() => {
+                        setIsShowRegency(
+                          listRegencies.length <= 1 ? false : true
+                        );
+                        setIsShowSubdistrict(false);
+                      }}
+                    />
+                  ) : (
+                    <ChevronUp
+                      className="absolute right-4 top-3 cursor-pointer"
+                      onClick={() => setIsShowRegency(false)}
+                    />
+                  )}
+                </div>
+                <div className="subdistrict-box relative my-3">
+                  <input
+                    onClick={() => {
+                      setIsShowSubdistrict(
+                        listSubdistrict.length <= 1 ? false : true
+                      );
+                    }}
+                    value={subdistrictValue}
+                    id="email"
+                    onChange={() => {}}
+                    // value={FormData[fieldKey] || ""}
+                    className={`border p-3 rounded-sm w-full bg-white`}
+                    required
+                  />
+                  <div
+                    className={`absolute ${
+                      isShowSubdistrict ? "block" : "hidden"
+                    } top-full h-[300px] overflow-y-auto border w-full text-center bg-white rounded-sm shadow-md`}
+                  >
+                    <ul>
+                      {listSubdistrict?.map((item, index) => {
+                        return (
+                          <li
+                            onClick={() => {
+                              setSubdistrictValue(item.name);
+                              setIsShowSubdistrict(false);
+                            }}
+                            className="my-2 cursor-pointer shadow-sm active:bg-gray-300 py-1.5 rounded-sm flex items-center justify-center"
+                            key={index}
+                          >
+                            {item.name}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+
+                  <label
+                    htmlFor="email"
+                    className="absolute top-3 left-4 transition-all duration-300 ease-in-out"
+                  >
+                    Kecamatan
+                  </label>
+
+                  <div className="absolute right-10 top-1.5 rounded-full p-2 active:bg-gray-300">
+                    <X
+                      className="cursor-pointer"
+                      size={20}
+                      onClick={() => setSubdistrictValue("")}
+                    />
+                  </div>
+                  {!isShowSubdistrict ? (
+                    <ChevronDown
+                      color={listSubdistrict.length === 1 ? "gray" : "black"}
+                      className={`absolute right-4 top-3 cursor-pointer`}
+                      onClick={() => {
+                        setIsShowSubdistrict(
+                          listSubdistrict.length <= 1 ? false : true
+                        );
+                      }}
+                    />
+                  ) : (
+                    <ChevronUp
+                      className="absolute right-4 top-3 cursor-pointer"
+                      onClick={() => setIsShowSubdistrict(false)}
+                    />
+                  )}
+                </div>
+              </>
+            )}
             <label
-              htmlFor={fieldKey}
+              htmlFor="email"
               className="absolute top-3 left-4 transition-all duration-300 ease-in-out pointer-events-none"
             >
               {label}
@@ -157,6 +473,7 @@ const InfoProfile = () => {
                 setIsShowOverlay(false);
                 setEditingField(null);
                 setIsInputDate(false);
+                setIsInputAdress(false);
               }}
               className="text-[#808080] font-medium"
             >
@@ -206,9 +523,18 @@ const InfoProfile = () => {
     }
   }, [user]);
 
-  // useEffect(() => {
-  //   handleGenderChange(activeGender);
-  // }, [activeGender]);
+  useEffect(() => {
+    const getProvince = async () => {
+      const response = await fetch(
+        "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+      );
+      const provinces = await response.json();
+      setListProvince(provinces);
+      setInitProvince(provinces);
+    };
+
+    getProvince();
+  }, []);
   return (
     <>
       <div className="p-4 relative">
@@ -267,6 +593,7 @@ const InfoProfile = () => {
                 onClick={() => {
                   setIsShowOverlay(true);
                   setEditingField("address");
+                  setIsInputAdress(true);
                 }}
               />
             </div>

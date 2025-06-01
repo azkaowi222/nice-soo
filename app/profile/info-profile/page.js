@@ -76,6 +76,21 @@ const InfoProfile = () => {
     }));
   };
 
+  const storeShipping = async (data) => {
+    try {
+      await fetch("http://localhost:3000/api/shipping/add-shipping", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ data }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getRegencies = async (id) => {
     const response = await fetch(
       `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${id}.json`
@@ -211,7 +226,9 @@ const InfoProfile = () => {
           if (ref.current.value.trim() === "") return;
           handleEdit(
             fieldKey,
-            `${ref.current.value} ${RegencyValue} ${subdistrictValue} ${provinceValue}`
+            `${ref.current.value}${
+              RegencyValue && ","
+            } ${RegencyValue} ${subdistrictValue} ${provinceValue}`
           );
           setShouldSave(true);
         }}
@@ -514,16 +531,6 @@ const InfoProfile = () => {
         }
       )
       .catch((err) => console.error(err));
-  }, []);
-
-  useEffect(() => {
-    if (shouldSave) {
-      handleSave(editingField ? true : false);
-      setShouldSave(false); // reset agar tidak loop
-    }
-  }, [user]);
-
-  useEffect(() => {
     const getProvince = async () => {
       const response = await fetch(
         "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
@@ -535,6 +542,34 @@ const InfoProfile = () => {
 
     getProvince();
   }, []);
+
+  useEffect(() => {
+    if (shouldSave) {
+      handleSave(editingField ? true : false);
+      setShouldSave(false); // reset agar tidak loop
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!subdistrictValue) return;
+    const calculateCost = async () => {
+      const response = await fetch("http://localhost:3000/api/shipping", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          subdisctrict: subdistrictValue,
+        }),
+      });
+      const {
+        data: [firstItem, secondItem, thirdItem],
+      } = await response.json();
+      const data = [firstItem, secondItem, thirdItem];
+      storeShipping(data);
+    };
+    calculateCost();
+  }, [subdistrictValue]);
   return (
     <>
       <div className="p-4 relative">

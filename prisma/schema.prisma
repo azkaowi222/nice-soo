@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model cache {
+  key        String @id @db.VarChar(255)
+  value      String @db.MediumText
+  expiration Int
+}
+
+model cache_locks {
+  key        String @id @db.VarChar(255)
+  owner      String @db.VarChar(255)
+  expiration Int
+}
+
+model cart_items {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  cart_id    BigInt    @db.UnsignedBigInt
+  product_id BigInt    @db.UnsignedBigInt
+  size       String?   @db.VarChar(255)
+  quantity   Int
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  carts      carts     @relation(fields: [cart_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cart_items_cart_id_foreign")
+  products   products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cart_items_product_id_foreign")
+
+  @@index([cart_id], map: "cart_items_cart_id_foreign")
+  @@index([product_id], map: "cart_items_product_id_foreign")
+}
+
+model carts {
+  id         BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id    BigInt       @unique(map: "user_id") @db.UnsignedBigInt
+  created_at DateTime?    @db.Timestamp(0)
+  updated_at DateTime?    @db.Timestamp(0)
+  cart_items cart_items[]
+  users      users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "carts_user_id_foreign")
+
+  @@index([user_id], map: "user_id_3")
+}
+
+model categories {
+  id         BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String     @db.VarChar(255)
+  slug       String     @unique(map: "categories_slug_unique") @db.VarChar(255)
+  created_at DateTime?  @default(now()) @db.Timestamp(0)
+  updated_at DateTime?  @default(now()) @db.Timestamp(0)
+  products   products[]
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String   @db.Text
+  queue      String   @db.Text
+  payload    String   @db.LongText
+  exception  String   @db.LongText
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+}
+
+model job_batches {
+  id             String  @id @db.VarChar(255)
+  name           String  @db.VarChar(255)
+  total_jobs     Int
+  pending_jobs   Int
+  failed_jobs    Int
+  failed_job_ids String  @db.LongText
+  options        String? @db.MediumText
+  cancelled_at   Int?
+  created_at     Int
+  finished_at    Int?
+}
+
+model jobs {
+  id           BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  queue        String @db.VarChar(255)
+  payload      String @db.LongText
+  attempts     Int    @db.UnsignedTinyInt
+  reserved_at  Int?   @db.UnsignedInt
+  available_at Int    @db.UnsignedInt
+  created_at   Int    @db.UnsignedInt
+
+  @@index([queue], map: "jobs_queue_index")
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement()) @db.UnsignedInt
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model order_items {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  order_id   BigInt    @db.UnsignedBigInt
+  product_id BigInt    @db.UnsignedBigInt
+  size       String?   @db.VarChar(255)
+  quantity   Int
+  price      Decimal   @db.Decimal(10, 2)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  orders     orders    @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "order_items_order_id_foreign")
+  products   products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "order_items_product_id_foreign")
+
+  @@index([order_id], map: "order_items_order_id_foreign")
+  @@index([product_id], map: "order_items_product_id_foreign")
+}
+
+model orders {
+  id                BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id           BigInt        @db.UnsignedBigInt
+  order_number      String        @unique(map: "orders_order_number_unique") @db.VarChar(255)
+  status            String        @default("pending") @db.VarChar(255)
+  subtotal          Decimal       @db.Decimal(10, 2)
+  shipping_cost     Decimal       @default(0.00) @db.Decimal(10, 2)
+  total             Decimal       @db.Decimal(10, 2)
+  promo_id          BigInt?       @db.UnsignedBigInt
+  discount          Decimal       @default(0.00) @db.Decimal(10, 2)
+  shipping_address  String        @db.Text
+  payment_method    String        @db.VarChar(255)
+  payment_status    String        @default("pending") @db.VarChar(255)
+  payment_reference String?       @db.VarChar(255)
+  created_at        DateTime?     @db.Timestamp(0)
+  updated_at        DateTime?     @db.Timestamp(0)
+  order_items       order_items[]
+  promos            promos?       @relation(fields: [promo_id], references: [id], onUpdate: Restrict, map: "orders_promo_id_foreign")
+  users             users         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "orders_user_id_foreign")
+
+  @@index([promo_id], map: "orders_promo_id_foreign")
+  @@index([user_id], map: "orders_user_id_foreign")
+}
+
+model password_reset_tokens {
+  email      String    @id @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+}
+
+model personal_access_tokens {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  tokenable_type String    @db.VarChar(255)
+  tokenable_id   BigInt    @db.UnsignedBigInt
+  name           String    @db.VarChar(255)
+  token          String    @unique(map: "personal_access_tokens_token_unique") @db.VarChar(64)
+  abilities      String?   @db.Text
+  last_used_at   DateTime? @db.Timestamp(0)
+  expires_at     DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+
+  @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
+}
+
+model product_images {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  product_id       BigInt    @db.UnsignedBigInt
+  image_path       String    @db.VarChar(255)
+  is_display_image Boolean   @default(false)
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+  products         products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "product_images_product_id_foreign")
+
+  @@index([product_id], map: "product_images_product_id_foreign")
+}
+
+model products {
+  id              BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  category_id     BigInt           @db.UnsignedBigInt
+  name            String           @db.VarChar(255)
+  description     String           @db.Text
+  price           Decimal          @db.Decimal(10, 2)
+  sizes           String?          @db.LongText
+  quantity        Int
+  additional_info String?          @db.Text
+  rating          Decimal          @default(0.00) @db.Decimal(3, 2)
+  created_at      DateTime?        @db.Timestamp(0)
+  updated_at      DateTime?        @db.Timestamp(0)
+  cart_items      cart_items[]
+  order_items     order_items[]
+  product_images  product_images[]
+  categories      categories       @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "products_category_id_foreign")
+  reviews         reviews[]
+
+  @@index([category_id], map: "products_category_id_foreign")
+}
+
+model promos {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  code       String    @unique(map: "promos_code_unique") @db.VarChar(255)
+  type       String    @db.VarChar(255)
+  value      Decimal   @db.Decimal(10, 2)
+  start_date DateTime  @db.Date
+  end_date   DateTime  @db.Date
+  max_uses   Int?
+  used_count Int       @default(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  orders     orders[]
+}
+
+model reviews {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id    BigInt    @db.UnsignedBigInt
+  product_id BigInt    @db.UnsignedBigInt
+  rating     Int
+  comment    String?   @db.Text
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  products   products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "reviews_product_id_foreign")
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "reviews_user_id_foreign")
+
+  @@index([product_id], map: "reviews_product_id_foreign")
+  @@index([user_id], map: "reviews_user_id_foreign")
+}
+
+model sessions {
+  id            String  @id @db.VarChar(255)
+  user_id       BigInt? @db.UnsignedBigInt
+  ip_address    String? @db.VarChar(45)
+  user_agent    String? @db.Text
+  payload       String  @db.LongText
+  last_activity Int
+
+  @@index([last_activity], map: "sessions_last_activity_index")
+  @@index([user_id], map: "sessions_user_id_index")
+}
+
+model users {
+  id                BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
+  first_name        String          @db.VarChar(255)
+  last_name         String?         @db.VarChar(255)
+  email             String          @unique(map: "users_email_unique") @db.VarChar(255)
+  email_verified_at DateTime?       @db.Timestamp(0)
+  password          String          @db.VarChar(255)
+  google_id         String?         @db.VarChar(255)
+  is_admin          Boolean         @default(false)
+  phone             String?         @db.VarChar(255)
+  address           String?         @db.Text
+  gender            users_gender?
+  birth_date        DateTime?       @db.Date
+  birth_place       String?         @db.VarChar(255)
+  remember_token    String?         @db.VarChar(100)
+  created_at        DateTime?       @db.Timestamp(0)
+  updated_at        DateTime?       @db.Timestamp(0)
+  carts             carts?
+  orders            orders[]
+  reviews           reviews[]
+  shipping_cost     shipping_cost[]
+}
+
+model shipping_cost {
+  id          Int    @id @default(autoincrement())
+  name        String @db.VarChar(50)
+  description String @db.VarChar(250)
+  cost        Int
+  etd         String @db.VarChar(50)
+  user_id     BigInt @db.UnsignedBigInt
+  users       users  @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "shipping_cost_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+enum users_gender {
+  male
+  female
+  other
+}

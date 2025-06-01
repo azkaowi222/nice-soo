@@ -94,7 +94,7 @@ const Navbar = () => {
               }`}
             >
               <User className="mr-2 w-4 md:w-5" />
-              Account
+              Akun
             </Link>
           )}
         </li>

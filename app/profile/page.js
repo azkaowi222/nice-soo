@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Title from "../components/title/Title";
 import {
@@ -9,34 +7,19 @@ import {
   UserRoundCog,
   Star,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { redirect } from "next/navigation";
-import Loader from "../components/loader/Loader";
-import getUser from "../utils/getUser";
-const Profile = () => {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleLogOut = async () => {
-    setIsLoading(true);
-    const token = localStorage.getItem("token");
-    await fetch("http://localhost:8000/api/logout", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    localStorage.clear();
-    setIsLoading(false);
-    redirect("/login");
-  };
-
-  useEffect(() => {
-    getUser()
-      .then((user) => setUser(user))
-      .catch((err) => console.log(err));
-  }, []);
+import { LogoutButton } from "../components/logout-buton/LogoutButton";
+import { cookies } from "next/headers";
+const Profile = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token");
+  const response = await fetch("http://localhost:8000/api/user", {
+    headers: {
+      Authorization: `Bearer ${token.value}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+  const user = await response.json();
   return (
     <>
       <Title title={"Akun"} />
@@ -92,14 +75,8 @@ const Profile = () => {
             <ChevronRight size={20} />
           </a>
         </div>
-        <button
-          onClick={handleLogOut}
-          className="bg-[#A98C8A] p-3 mt-4 w-full rounded-md cursor-pointer"
-        >
-          Keluar
-        </button>
+        <LogoutButton />
       </div>
-      <Loader isLoading={isLoading} />
     </>
   );
 };

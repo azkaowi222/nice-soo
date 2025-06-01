@@ -1,5 +1,5 @@
 const products = async () => {
-  const response = await fetch("https://fakestoreapi.com/products?limit=6");
+  const response = await fetch("http://localhost:8000/api/products");
   const data = await response.json();
   return data;
 };

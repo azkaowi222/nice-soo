@@ -16,10 +16,8 @@ const BodyWrapper = ({ children }) => {
   return (
     <body
       className={`${
-        isAdminOrCheckoutPage
-          ? "pt-0 pb-0 antialiased relative md:pt-22"
-          : "pt-20 pb-20"
-      } antialiased relative md:pt-22`}
+        isAdminOrCheckoutPage ? "pt-0 pb-0 antialiased relative" : "pt-20 pb-20"
+      } antialiased relative`}
     >
       {children}
     </body>

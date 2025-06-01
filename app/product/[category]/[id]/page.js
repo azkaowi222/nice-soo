@@ -3,63 +3,97 @@ import { useEffect, useState, useRef } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown, Heart } from "lucide-react";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Tabs from "../components/tabs/Tabs";
+import Tabs from "../../../components/tabs/Tabs";
 import Image from "next/image";
-import NewProduct from "../components/new-product/NewProduct";
-import data from "../lib/products";
-import Quantity from "../components/quantity-selector/Quantity";
+import NewProduct from "../../../components/new-product/NewProduct";
+import Quantity from "../../../components/quantity-selector/Quantity";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import React from "react";
+import { useParams } from "next/navigation";
 const Product = () => {
   const [imageWidth, setImageWidth] = useState(null);
-  const [products, setProducts] = useState([]);
+  const [product, setProduct] = useState({
+    name: null,
+    description: null,
+    price: null,
+    images: null,
+    category: null,
+  });
   const [quantity, setQuantity] = useState(1);
   const [size, setSize] = useState(null);
   const imageRef = useRef(null);
   const nameRef = useRef(null);
   const priceRef = useRef(null);
+  const params = useParams();
+  const { category, id } = params;
 
-  const handleAddToCart = () => {
-    const products = JSON.parse(localStorage.getItem("cart"));
-    const name = nameRef.current.innerText;
-    const newPrice = priceRef.current.innerText;
-    const price = newPrice.replace("Rp. ", "").replace(".", "");
-    if (!products) {
-      localStorage.setItem(
-        "cart",
-        JSON.stringify([
-          {
-            id: crypto.randomUUID(),
-            quantity,
-            size,
-            name,
-            price,
-          },
-        ])
-      );
-      return alert("Berhasil Tambah Ke Keranjang");
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:8000/api/cart/items", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        product_id: id,
+        size,
+        quantity,
+      }),
+    });
+    if (response.status !== 200) {
+      return alert("produk gagal ditambahkan");
     }
-    localStorage.setItem(
-      "cart",
-      JSON.stringify([
-        ...products,
-        { id: crypto.randomUUID(), quantity, size, name, price },
-      ])
-    );
-    alert("Berhasil Tambah Ke Keranjang");
+    alert("produk success ditambahkan");
+    // const product = JSON.parse(localStorage.getItem("cart"));
+    // const name = nameRef.current.innerText;
+    // const newPrice = priceRef.current.innerText;
+    // const price = newPrice.replace("Rp. ", "").replace(".", "");
+    // if (!product) {
+    //   localStorage.setItem(
+    //     "cart",
+    //     JSON.stringify([
+    //       {
+    //         id: crypto.randomUUID(),
+    //         quantity,
+    //         size,
+    //         name,
+    //         price,
+    //       },
+    //     ])
+    //   );
+    //   return alert("Berhasil Tambah Ke Keranjang");
+    // }
+    // localStorage.setItem(
+    //   "cart",
+    //   JSON.stringify([
+    //     ...product,
+    //     { id: crypto.randomUUID(), quantity, size, name, price },
+    //   ])
+    // );
+    // alert("Berhasil Tambah Ke Keranjang");
   };
 
   useEffect(() => {
-    data().then((res) => {
-      setProducts(res);
-    });
+    const getProductById = async () => {
+      const response = await fetch(`http://localhost:8000/api/products/${id}`);
+      const data = await response.json();
+      setProduct({
+        name: data.product.name,
+        price: data.product.price,
+        description: data.product.description,
+        images: data.product.images[0].image_path,
+        category: data.product.category.name,
+      });
+    };
     if (typeof window !== "undefined" && imageRef.current) {
       const height = imageRef.current.clientWidth / 2;
       const size = Math.floor(height);
       setImageWidth(size.toString() + "px");
     }
+    getProductById();
   }, []);
 
   return (
@@ -98,9 +132,12 @@ const Product = () => {
       >
         <SwiperSlide>
           <Image
-            src="/images/tupperware.jpg"
+            src={
+              !product.images ? "/images/no-image.png" : `/${product.images}`
+            }
             alt="Product Image"
             ref={imageRef}
+            priority
             width={200}
             height={200}
             className=" w-[90%] object-cover aspect-square mx-auto"
@@ -109,18 +146,24 @@ const Product = () => {
         </SwiperSlide>
         <SwiperSlide>
           <Image
-            src="/images/tupperware.jpg"
+            src={
+              !product.images ? "/images/no-image.png" : `/${product.images}`
+            }
             alt="Product Image"
             width={200}
+            priority
             height={200}
             className="w-[90%] object-cover aspect-square mx-auto"
           />
         </SwiperSlide>
         <SwiperSlide>
           <Image
-            src="/images/tupperware.jpg"
+            src={
+              !product.images ? "/images/no-image.png" : `/${product.images}`
+            }
             alt="Product Image"
             width={200}
+            priority
             height={200}
             className="w-[90%] object-cover aspect-square mx-auto"
           />
@@ -128,9 +171,14 @@ const Product = () => {
       </Swiper>
       <div className="details p-4 flex flex-col gap-4">
         <h3 ref={nameRef} className="text-2xl font-semibold">
-          Tupperware Emak
+          {product.name}
         </h3>
-        <p ref={priceRef}>Rp. 10.000</p>
+        <p ref={priceRef}>
+          {new Intl.NumberFormat("en-ID", {
+            style: "currency",
+            currency: "IDR",
+          }).format(Number(product.price))}
+        </p>
         <div className="size flex gap-6 relative items-center">
           <h3>Ukuran</h3>
           <ChevronDown
@@ -161,10 +209,10 @@ const Product = () => {
           </button>
         </div>
         <hr className="border-gray-300" />
-        <h2>Kategori: Alat Dapur, Peralatan Rumah Tangga.</h2>
+        <h2>Kategori: {product.category}</h2>
       </div>
       <Tabs />
-      <NewProduct data={products} newProduct={false} />
+      {/* <NewProduct data={product} newProduct={false} /> */}
     </section>
   );
 };

@@ -1,6 +1,9 @@
 "use client";
 import Loader from "@/app/components/loader/Loader";
+import Navbar from "@/app/components/navbar/Navbar";
+import TopNavbar from "@/app/components/navbar/top-nav/TopNav";
 import { ChevronLeft, Info } from "lucide-react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const ChangePass = () => {
@@ -58,15 +61,16 @@ const ChangePass = () => {
 
   return (
     <>
+      <TopNavbar />
       <div className="p-4">
         <div className="back-btn flex justify-center">
-          <a
+          <Link
             href="/profile"
             className="px-4 py-2 rounded-md cursor-pointer flex items-center border gap-2"
           >
             <ChevronLeft size={22} />
             Kembali
-          </a>
+          </Link>
         </div>
         <form onSubmit={handleChangePass}>
           <div className="input-box flex flex-col gap-6 mt-16">
@@ -124,6 +128,7 @@ const ChangePass = () => {
         </div>
       </div>
       <Loader isLoading={isLoading} />
+      <Navbar />
     </>
   );
 };

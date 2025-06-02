@@ -9,6 +9,9 @@ import {
 } from "lucide-react";
 import { LogoutButton } from "../components/logout-buton/LogoutButton";
 import { cookies } from "next/headers";
+import TopNavbar from "../components/navbar/top-nav/TopNav";
+import Navbar from "../components/navbar/Navbar";
+import Link from "next/link";
 const Profile = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
@@ -22,6 +25,7 @@ const Profile = async () => {
   const user = await response.json();
   return (
     <>
+      <TopNavbar />
       <Title title={"Akun"} />
       <div className="px-4">
         <div className="detail flex justify-center flex-col items-center mt-4">
@@ -44,7 +48,7 @@ const Profile = async () => {
           </div>
         </div>
         <div className="btn-act">
-          <a
+          <Link
             href="/profile/change-pass"
             className="btn-password w-full bg-[white] shadow-md rounded-lg mt-4 flex items-center justify-between px-4 py-4"
           >
@@ -53,8 +57,8 @@ const Profile = async () => {
               <button className="pointer-events-none">Ganti Kata Sandi</button>
             </div>
             <ChevronRight size={20} />
-          </a>
-          <a
+          </Link>
+          <Link
             href="/profile/info-profile"
             className="btn-password w-full bg-[white] shadow-md rounded-lg mt-4 flex items-center justify-between px-4 py-4"
           >
@@ -63,8 +67,8 @@ const Profile = async () => {
               <button className="pointer-events-none">Atur Akun</button>
             </div>
             <ChevronRight size={20} />
-          </a>
-          <a
+          </Link>
+          <Link
             href="/profile/review"
             className="btn-password w-full bg-[white] shadow-md rounded-lg mt-4 flex items-center justify-between px-4 py-4"
           >
@@ -73,10 +77,11 @@ const Profile = async () => {
               <button className="pointer-events-none">Ulasan</button>
             </div>
             <ChevronRight size={20} />
-          </a>
+          </Link>
         </div>
         <LogoutButton />
       </div>
+      <Navbar />
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import LayoutWrapper from "./components/layout-wrapper/LayoutWrapper";
-import BodyWrapper from "./components/layout-wrapper/BodyWrapper";
+// import LayoutWrapper from "./components/layout-wrapper/ayoutWrapper";
+// import BodyWrapper from "./components/layout-wrapper/BodyWrapper";
 import React from "react";
 
 const geistSans = Geist({
@@ -25,15 +25,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <BodyWrapper>
+      <body>
         <main
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased py-20`}
         >
-          <LayoutWrapper>{children}</LayoutWrapper>
+          {children}
         </main>
-        {/* <TopNavbar />
-        <Navbar /> */}
-      </BodyWrapper>
+      </body>
     </html>
   );
 }

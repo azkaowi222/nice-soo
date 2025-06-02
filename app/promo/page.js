@@ -1,9 +1,12 @@
 import Image from "next/image";
 import Title from "../components/title/Title";
 import React from "react";
+import TopNavbar from "../components/navbar/top-nav/TopNav";
+import Navbar from "../components/navbar/Navbar";
 const Promo = ({ products }) => {
   return (
     <>
+      <TopNavbar />
       <Title title={"Promo Hari Ini"} />
       {!products ? (
         <div className="flex flex-col gap-8 justify-center items-center h-[458px]">
@@ -20,6 +23,7 @@ const Promo = ({ products }) => {
       ) : (
         <div>product ada</div>
       )}
+      <Navbar />
     </>
   );
 };

@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import Loader from "../components/loader/Loader";
+import TopNavbar from "../components/navbar/top-nav/TopNav";
+import Navbar from "../components/navbar/Navbar";
 const Register = () => {
   const [first_name, setFirstName] = useState(null);
   const [last_name, setLastName] = useState(null);
@@ -64,6 +66,7 @@ const Register = () => {
 
   return (
     <>
+      <TopNavbar />
       <div className="container h-[600px] flex flex-col items-center justify-center max-w-none">
         {/* <Logo /> */}
         <form className="w-full md:w-[500px]" onSubmit={handleRegister}>
@@ -214,6 +217,7 @@ const Register = () => {
         </div>
       </div>
       <Loader isLoading={isLoading} />
+      <Navbar />
     </>
   );
 };

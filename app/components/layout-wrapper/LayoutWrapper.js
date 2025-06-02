@@ -1,12 +1,13 @@
-"use client";
-
-import { usePathname } from "next/navigation";
-import React from "react";
 import TopNavbar from "../navbar/top-nav/TopNav";
 import Navbar from "../navbar/Navbar";
+import { headers } from "next/headers";
 
-const LayoutWrapper = ({ children }) => {
-  const pathname = usePathname();
+const LayoutWrapper = async ({ children }) => {
+  // const pathname = usePathname();
+  const headersList = await headers();
+  const fullUrl = headersList.get("x-url") ?? " https://www.google.com";
+  const url = new URL(fullUrl);
+  const pathname = url.pathname;
   const hideNavbarRoutes = ["/dashboard", "/admin", "/checkout"];
   const showNavbar = !hideNavbarRoutes.some((path) =>
     pathname.startsWith(path)

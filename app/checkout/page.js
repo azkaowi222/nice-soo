@@ -6,6 +6,8 @@ import { Ellipsis, Notebook, TicketPercent, Truck } from "lucide-react";
 import Image from "next/image";
 import { ChevronRight, MapPin } from "react-feather";
 import getUser from "../utils/getUser";
+import Loader from "../components/loader/Loader";
+import Link from "next/link";
 
 const Checkout = () => {
   const [user, setUser] = useState(null);
@@ -16,10 +18,12 @@ const Checkout = () => {
   const [otherShipping, setOtherShipping] = useState(null);
   const [isShowOverlay, setIsShowOverlay] = useState(false);
   const [isShowCourierBox, setIsShowCourierBox] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Misalnya di file: pages/checkout.tsx atau komponen CheckoutForm.tsx
   const handleCheckout = async () => {
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:3000/api/checkout", {
         method: "POST",
@@ -34,8 +38,9 @@ const Checkout = () => {
       });
 
       const { transaction } = await response.json();
+      setIsLoading(false);
       if (transaction.token) {
-        window.snap.pay(transaction.token);
+        snap.pay(transaction.token);
       } else {
         console.error("Gagal checkout:", data.message);
       }
@@ -90,17 +95,19 @@ const Checkout = () => {
   }, [cartItems]);
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden -my-20">
       <Title title={"Checkout"} center={false} hasIcon={true} />
       <div className="mt-5 p-3 shadow-md bg-white">
         <h1 className="text-xl font-medium">Alamat Pengiriman</h1>
-        <div className="flex justify-between mt-5">
-          <div className="flex items-center gap-1.5">
-            <MapPin size={18} />
-            <p>{user?.address}</p>
+        <Link href={"/profile/info-profile"}>
+          <div className="flex justify-between mt-5">
+            <div className="flex items-center gap-1.5">
+              <MapPin size={18} />
+              <p>{user?.address}</p>
+            </div>
+            <ChevronRight />
           </div>
-          <ChevronRight />
-        </div>
+        </Link>
       </div>
       <div className="cart flex flex-col gap-4 justify-center mt-4 bg-white shadow-md mb-5 py-4">
         {cartItems?.map((item, index) => {
@@ -343,6 +350,7 @@ const Checkout = () => {
           isShowOverlay ? "block" : "hidden"
         } overlay fixed top-0 left-0 w-full h-full z-10 flex items-center justify-center`}
       ></div>
+      <Loader isLoading={isLoading} />
     </div>
   );
 };

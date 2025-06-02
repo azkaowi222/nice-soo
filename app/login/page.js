@@ -3,15 +3,18 @@ import Image from "next/image";
 import { EyeOff, Eye, Info } from "react-feather";
 import { useEffect, useState } from "react";
 import React from "react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Loader from "@/app/components/loader/Loader";
 import Link from "next/link";
+import TopNavbar from "../components/navbar/top-nav/TopNav";
+import Navbar from "../components/navbar/Navbar";
 const Login = () => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [alert, setAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -34,12 +37,12 @@ const Login = () => {
     });
     const data = await response.json();
     setIsLoading(false);
-    if (response.status !== 200) {
+    if (response?.status !== 200) {
       setAlert(true);
       return;
     }
     localStorage.setItem("token", data.access_token);
-    redirect("/profile");
+    router.push("/profile");
   };
 
   const handleLoginGoogle = async () => {
@@ -57,6 +60,7 @@ const Login = () => {
 
   return (
     <>
+      <TopNavbar />
       <div className="container h-[458px] flex flex-col items-center justify-center max-w-none">
         <form className="w-full md:w-[500px]" onSubmit={handleLogin}>
           <h1 className="text-2xl font-semibold tracking-wider text-center">
@@ -153,6 +157,7 @@ const Login = () => {
         </div>
       </div>
       <Loader isLoading={isLoading} />
+      <Navbar />
     </>
   );
 };

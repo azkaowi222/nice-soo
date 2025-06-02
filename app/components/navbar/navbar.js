@@ -1,28 +1,20 @@
 "use client";
-import { usePathname } from "next/navigation";
 import { Home, ShoppingCart, Tag, LogIn, User } from "react-feather";
 import Image from "next/image";
 import Navbox from "./nav-box/Navbox";
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const pathname = usePathname();
-  const [isLogin, setIsLogin] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
+  const [isLogin, setIsLogin] = useState(null);
 
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    // Cek ulang token setiap kali route berubah
     const token = localStorage.getItem("token");
     setIsLogin(!!token);
-  }, [pathname]); // ini penting!
-
-  if (!hasMounted) return null;
-
+  }, []);
+  if (isLogin === null) return null;
   return (
     <Navbox>
       <div className="hidden md:block">

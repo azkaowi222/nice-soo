@@ -1,22 +1,19 @@
-"use client";
+import { headers } from "next/headers";
 
-import { usePathname } from "next/navigation";
-import React from "react";
-
-const BodyWrapper = ({ children }) => {
-  const pathname = usePathname();
-
+const BodyWrapper = async ({ children }) => {
+  const headersList = await headers();
+  const fullUrl = headersList.get("x-url") ?? " https://www.google.com";
+  console.log(fullUrl);
+  const url = new URL(fullUrl);
+  const pathname = url.pathname;
   // Tambahkan kondisi di sini
   const isAdminOrCheckoutPage =
     pathname.startsWith("/dashboard/admin") || pathname.startsWith("/checkout");
 
-  //   const customClass = isAdminPage
-  //     ? "" // class khusus admin
-  //     : "bg-white text-neutral-800"; // default
   return (
     <body
       className={`${
-        isAdminOrCheckoutPage ? "pt-0 pb-0 antialiased relative" : "pt-20 pb-20"
+        isAdminOrCheckoutPage ? "pt-0 pb-0" : "pt-20 pb-20"
       } antialiased relative`}
     >
       {children}

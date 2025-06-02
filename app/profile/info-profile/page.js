@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import { ChevronDown, ChevronUp } from "react-feather";
+import TopNavbar from "@/app/components/navbar/top-nav/TopNav";
+import Navbar from "@/app/components/navbar/Navbar";
+import Link from "next/link";
 
 const InfoProfile = () => {
   const [user, setUser] = useState({
@@ -226,7 +229,7 @@ const InfoProfile = () => {
           if (ref.current.value.trim() === "") return;
           handleEdit(
             fieldKey,
-            `${ref.current.value}${
+            `${ref.current.value.toUpperCase()}${
               RegencyValue && ","
             } ${RegencyValue} ${subdistrictValue} ${provinceValue}`
           );
@@ -572,15 +575,16 @@ const InfoProfile = () => {
   }, [subdistrictValue]);
   return (
     <>
+      <TopNavbar />
       <div className="p-4 relative">
         <div className="back-btn flex justify-center">
-          <a
+          <Link
             href="/profile"
             className="px-4 py-2 rounded-md cursor-pointer flex items-center border gap-2"
           >
             <ChevronLeft size={22} />
             Kembali
-          </a>
+          </Link>
         </div>
         <div className="info-profile mt-16">
           <div className="name-box flex gap-3 items-center p-4 rounded-md bg-white">
@@ -776,6 +780,7 @@ const InfoProfile = () => {
           )}
         </div>
       </div>
+      <Navbar />
     </>
   );
 };

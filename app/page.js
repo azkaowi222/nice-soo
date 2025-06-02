@@ -6,6 +6,7 @@ import TopNavbar from "./components/navbar/top-nav/TopNav";
 import Navbar from "./components/navbar/Navbar";
 const Home = async () => {
   const data = await products();
+  if (!data) return null;
   return (
     <div>
       <TopNavbar />

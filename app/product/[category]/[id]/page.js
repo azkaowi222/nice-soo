@@ -10,10 +10,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import React from "react";
-// import { useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import Navbar from "@/app/components/navbar/Navbar";
 import TopNavbar from "@/app/components/navbar/top-nav/TopNav";
-const Product = ({ params }) => {
+const Product = () => {
   const [imageWidth, setImageWidth] = useState(null);
   const [product, setProduct] = useState({
     name: null,
@@ -27,11 +27,10 @@ const Product = ({ params }) => {
   const imageRef = useRef(null);
   const nameRef = useRef(null);
   const priceRef = useRef(null);
-  // const params = useParams();
+  const params = useParams();
   const { category, id } = params;
 
   const handleAddToCart = async () => {
-    console.log(id);
     const token = localStorage.getItem("token");
     const response = await fetch("http://localhost:8000/api/cart/items", {
       method: "POST",

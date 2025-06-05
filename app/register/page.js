@@ -133,7 +133,7 @@ const Register = () => {
                 htmlFor="password"
                 className="absolute top-3 left-4 transition-all duration-300 ease-in-out pointer-events-none"
               >
-                Password*
+                Password *
               </label>
               <input
                 type="checkbox"

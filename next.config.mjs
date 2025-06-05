@@ -19,6 +19,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "makanbang.id",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
     ],
   },
 };

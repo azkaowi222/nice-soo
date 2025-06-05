@@ -7,13 +7,11 @@ import midtransClient from "midtrans-client";
 export async function POST(req) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
-  const { shipping_cost, promo_code, city } = await req.json();
+  const { shipping_cost } = await req.json();
   try {
     const response = await fetch("http://localhost:8000/api/user", {
       headers: {
-        Authorization: `Bearer ${
-          token?.value ?? "16|oipqlHuyTKnLdk0oyFWJu1EfYcjeT6RGGTsw4NeA0643f854"
-        }`,
+        Authorization: `Bearer ${token?.value}`,
         accept: "application/json",
       },
     });
@@ -33,7 +31,9 @@ export async function POST(req) {
       },
     });
     const { cart_items } = cart;
+    // console.log(cart_items);
     const item_details = cart_items?.map((item) => {
+      console.log(item.quantity);
       return {
         id: item.products.id.toString(),
         price: item.products.price,

@@ -234,6 +234,13 @@ const InfoProfile = () => {
             } ${RegencyValue} ${subdistrictValue} ${provinceValue}`
           );
           setShouldSave(true);
+          setIsShowOverlay(false);
+          setEditingField(null);
+          setIsInputDate(false);
+          setIsInputAdress(false);
+          setRegencyValue("");
+          setProvinceValue("");
+          setSubdistrictValue("");
         }}
       >
         <div className="flex flex-col gap-3">
@@ -494,6 +501,9 @@ const InfoProfile = () => {
                 setEditingField(null);
                 setIsInputDate(false);
                 setIsInputAdress(false);
+                setRegencyValue("");
+                setProvinceValue("");
+                setSubdistrictValue("");
               }}
               className="text-[#808080] font-medium"
             >

@@ -1,99 +1,58 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import Title from "../components/title/Title";
-import { Ellipsis, Notebook, TicketPercent, Truck } from "lucide-react";
+import Title from "@/app/components/title/Title";
 import Image from "next/image";
 import { ChevronRight, MapPin } from "react-feather";
-import getUser from "../utils/getUser";
-import Loader from "../components/loader/Loader";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { Delivery } from "@/app/components/delivery/Delivery";
 
-const Checkout = () => {
-  const [user, setUser] = useState(null);
-  const [cartItems, setCartItems] = useState([]);
-  const [subtotal, setSubtotal] = useState(0);
-  const [shipping, setShipping] = useState(null);
-  const [selectedShipping, setSelectedShipping] = useState(null);
-  const [otherShipping, setOtherShipping] = useState(null);
-  const [isShowOverlay, setIsShowOverlay] = useState(false);
-  const [isShowCourierBox, setIsShowCourierBox] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+const Checkout = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token");
+  let user, cartItems, shipping, subtotal;
 
-  // Misalnya di file: pages/checkout.tsx atau komponen CheckoutForm.tsx
-  const handleCheckout = async () => {
-    try {
-      setIsLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-          accept: "application/json", // jika pakai auth token
-        },
-        body: JSON.stringify({
-          shipping_cost: selectedShipping?.cost,
+  try {
+    const [userResponse, cartItemsResponse, shippingResponse] =
+      await Promise.all([
+        fetch("http://localhost:8000/api/user", {
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+            Accept: "application/json",
+          },
+          cache: "no-store",
         }),
-      });
-
-      const { transaction } = await response.json();
-      setIsLoading(false);
-      if (transaction.token) {
-        snap.pay(transaction.token);
-      } else {
-        console.error("Gagal checkout:", data.message);
-      }
-    } catch (error) {
-      console.error("Error saat checkout:", error);
-    }
-  };
-
-  const handleShipping = async () => {
-    const response = await fetch("http://localhost:3000/api/shipping", {
-      credentials: "include",
-      headers: {
-        accept: "application/json",
-      },
-    });
-    const { data } = await response.json();
-    setShipping(data);
-    setSelectedShipping(data[0]);
-  };
-
-  const getCarts = async () => {
-    const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:8000/api/cart", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const { items } = await response.json();
-    setCartItems(items);
-  };
-
-  useEffect(() => {
-    getUser()
-      .then((user) => setUser(user))
-      .catch(console.error);
-    handleShipping();
-    getCarts();
-    const script = document.createElement("script");
-    script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-    script.setAttribute("data-client-key", "SB-Mid-client-KcnIMF7lzfb_IZu1");
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-
-  useEffect(() => {
-    if (cartItems.length === 0) return;
-    const subtotal = cartItems.reduce(
+        fetch("http://localhost:8000/api/cart", {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token?.value}`,
+          },
+          cache: "no-store",
+        }),
+        fetch("http://localhost:3000/api/shipping", {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token?.value}`,
+          },
+          cache: "no-store",
+        }),
+      ]);
+    [user, { items: cartItems }, { data: shipping }] = await Promise.all([
+      userResponse.json(),
+      cartItemsResponse.json(),
+      shippingResponse.json(),
+    ]);
+    subtotal = cartItems?.reduce(
       (acc, product) => acc + product.product.price * product.quantity,
       0
     );
-    setSubtotal(subtotal);
-  }, [cartItems]);
-
+    // console.log(cartItems, shipping);
+  } catch (error) {
+    console.error(`Error message: ${error?.message}`);
+    return (
+      <div className="h-screen flex items-center, justify-center">
+        <p>Ada yang error: {error?.message}</p>
+      </div>
+    );
+  }
   return (
     <div className="relative overflow-hidden -my-20">
       <Title title={"Checkout"} center={false} hasIcon={true} />
@@ -117,7 +76,7 @@ const Checkout = () => {
               <div className="item-box flex gap-4 px-4">
                 <div className="img-box w-[120px] border-b-2 border-t-2 border-gray-300 flex items-center rounded-md">
                   <Image
-                    src={`/${item?.product?.images?.[0]?.image_path}`}
+                    src={`http://localhost:8000/storage/${item?.product?.images?.[0]?.image_path}`}
                     width={0}
                     height={0}
                     layout="responsive"
@@ -140,13 +99,13 @@ const Checkout = () => {
                     <p className="mt-3">Ukuran: {item.size}</p>
                   </div>
                   <div className="price flex justify-between items-center mt-3">
-                    <span>Quantity: {item?.product?.quantity}</span>
+                    <span>Quantity: {item?.quantity}</span>
                     <p className="text-xl">
                       {new Intl.NumberFormat("id-ID", {
                         style: "currency",
                         currency: "IDR",
                         minimumFractionDigits: 0,
-                      }).format(item?.product?.price * item?.product?.quantity)}
+                      }).format(item?.product?.price * item?.quantity)}
                     </p>
                   </div>
                 </div>
@@ -194,8 +153,9 @@ const Checkout = () => {
           </label>
         </div>
       </div>
+      <Delivery shipping={shipping} subtotal={subtotal} />
 
-      <div id="delivery" className="p-4 flex flex-col gap-4 bg-white shadow-md">
+      {/* <div id="delivery" className="p-4 flex flex-col gap-4 bg-white shadow-md">
         <div id="delivey-courier" className="flex justify-between">
           <h1 className="font-semibold text-xl tracking-wide mb-3">
             Opsi Pengiriman
@@ -233,9 +193,9 @@ const Checkout = () => {
             hari.
           </p>
         </div>
-      </div>
+      </div> */}
 
-      <div className="receipt border flex flex-col gap-4 px-6 py-8 mt-8">
+      {/* <div className="receipt border flex flex-col gap-4 px-6 py-8 mt-8">
         <div className="flex gap-2 items-center">
           <Notebook className="border-yellow-500" />
           <h1 className="text-xl">Rincian Pembayaran</h1>
@@ -280,8 +240,8 @@ const Checkout = () => {
         >
           Bayar
         </button>
-      </div>
-      <div
+      </div> */}
+      {/* <div
         id="courierBox"
         className={`bg-[#393E46] rounded-t-sm fixed bottom-0 w-full z-20 ${
           isShowCourierBox ? "translate-y-0" : "translate-y-full"
@@ -344,13 +304,13 @@ const Checkout = () => {
             </button>
           </div>
         </div>
-      </div>
-      <div
+      </div> */}
+      {/* <div
         className={`${
           isShowOverlay ? "block" : "hidden"
         } overlay fixed top-0 left-0 w-full h-full z-10 flex items-center justify-center`}
-      ></div>
-      <Loader isLoading={isLoading} />
+      ></div> */}
+      {/* <Loader isLoading={isLoading} /> */}
     </div>
   );
 };

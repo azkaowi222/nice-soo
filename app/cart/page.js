@@ -2,7 +2,7 @@
 import { ChevronLeft, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Coupon from "@/app/components/coupon/Coupon";
-import { TrashButton } from "@/app/components/trash-button/TrashButton";
+import { NextButton, TrashButton } from "@/app/components/button/Buttons";
 import Title from "@/app/components/title/Title";
 import Link from "next/link";
 import { cookies } from "next/headers";
@@ -20,42 +20,7 @@ const Cart = async () => {
     },
     cache: "no-store",
   });
-  const { items } = await response.json();
-  const carts = items;
-  //   const token = localStorage.getItem("token");
-  //   if (!token) return;
-  //   const response = await fetch(`http://localhost:8000/api/cart`, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   });
-  //   const { items } = await response.json();
-  //   const newCarts = items?.map((item) => {
-  //     return {
-  //       id: item?.id,
-  //       name: item?.product?.name,
-  //       size: item?.size,
-  //       price: item?.product?.price,
-  //       quantity: item?.quantity,
-  //       description: item?.product?.description,
-  //       rating: item?.product?.rating,
-  //       images: item?.product.images,
-  //     };
-  //   });
-  //   // setCarts(newCarts);
-  // };
-
-  // useEffect(() => {
-  //   // const cart = JSON.parse(localStorage.getItem("cart"));
-  //   // setCarts(cart);
-  //   // setSubTotal(
-  //   //   cart?.reduce(
-  //   //     (acc, product) => acc + Number(product.price) * product.quantity,
-  //   //     0
-  //   //   )
-  //   // );
-  //   getCart();
-  // }, []);
+  const { items: carts } = await response.json();
 
   return (
     <>
@@ -91,7 +56,7 @@ const Cart = async () => {
                     <div className="item-box flex gap-4">
                       <div className="img-box w-[120px] border-b-2 border-t-2 border-gray-300 flex items-center rounded-md">
                         <Image
-                          src={`/${item?.product?.images[0]?.image_path}`}
+                          src={`http://localhost:8000/storage/${item?.product?.images?.[0]?.image_path}`}
                           width={0}
                           height={0}
                           layout="responsive"
@@ -103,7 +68,7 @@ const Cart = async () => {
                       <div className="item-info w-full relative">
                         <div>
                           <h2 className="text-lg font-semibold max-w-52">
-                            {item.name}
+                            {item?.product.name}
                           </h2>
                           <p className="mt-3">
                             {new Intl.NumberFormat("id-ID", {
@@ -115,7 +80,7 @@ const Cart = async () => {
                           <p className="mt-3">Ukuran: {item.size}</p>
                         </div>
                         <div className="price flex justify-between items-center mt-3">
-                          <span>Total Produk: {item.quantity}</span>
+                          <span>Quantity: {item.quantity}</span>
                           <p className="text-xl">
                             {new Intl.NumberFormat("id-ID", {
                               style: "currency",
@@ -131,14 +96,16 @@ const Cart = async () => {
                   </div>
                 );
               })}
-              <Coupon />
-              <Link
+
+              {/* <Link
                 href={"/checkout"}
                 className="bg-[#282828] text-white p-4 cursor-pointer text-center"
               >
                 Lanjutkan
-              </Link>
+              </Link> */}
             </div>
+            <Coupon />
+            <NextButton isLoading={true} />
           </div>
         </div>
       )}

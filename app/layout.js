@@ -23,6 +23,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <script
+        data-client-key="SB-Mid-client-KcnIMF7lzfb_IZu1"
+        src="https://app.sandbox.midtrans.com/snap/snap.js"
+        async
+      ></script>
       <body>
         <main
           className={`${geistSans.variable} ${geistMono.variable} antialiased py-20`}

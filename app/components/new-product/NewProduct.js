@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 const NewProduct = ({ data, newProduct }) => {
-  //   console.log(data);
+  // console.log(data);
   return (
     <div className="p-4 products-box">
       <h1 className="text-xl font-semibold mb-2 products-title">
@@ -13,6 +13,7 @@ const NewProduct = ({ data, newProduct }) => {
           const price = new Intl.NumberFormat("en-ID", {
             style: "currency",
             currency: "IDR",
+            minimumFractionDigits: 0,
           }).format(Number(item.price));
           return (
             <Link
@@ -21,7 +22,7 @@ const NewProduct = ({ data, newProduct }) => {
               className="box-item md:w-40"
             >
               <Image
-                src={`/${item.images[0].image_path}`}
+                src={`http://localhost:8000/storage/${item.images[0]?.image_path}`}
                 width={400}
                 height={400}
                 alt="product"

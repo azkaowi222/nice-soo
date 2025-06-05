@@ -4,7 +4,7 @@
     "jsx": "react",
     "paths": {
       "@/*": ["./*"]
-    }
-    // "checkJs": true
+    },
+    "checkJs": false
   }
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import prisma from "@/lib/prisma";
 export async function POST(req) {
   const { subdisctrict } = await req.json();
@@ -68,16 +68,18 @@ const calculateCost = async (subdisctrictId) => {
 };
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token");
+  // const cookieStore = await cookies();
+  // const token = cookieStore.get("token");
+  const headersStore = await headers();
+  const token = headersStore.get("Authorization").split(" ")[1];
   const response = await fetch("http://localhost:8000/api/user", {
     headers: {
-      Authorization: `Bearer ${token?.value}`,
+      Authorization: `Bearer ${token}`,
       accept: "application/json",
     },
   });
   const { id } = await response.json();
-  // console.log(id);
+  console.log(`id: ${id}`);
   try {
     const shippingData = await prisma.shipping_cost.findMany({
       where: {

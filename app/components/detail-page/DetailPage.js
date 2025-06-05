@@ -9,19 +9,22 @@ import { useEffect, useState, useRef } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { redirect } from "next/navigation";
 
-const DetailPage = ({ product }) => {
+const DetailPage = ({ product, token }) => {
   const [imageWidth, setImageWidth] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [size, setSize] = useState(null);
   const imageRef = useRef(null);
 
   const handleAddToCart = async (id) => {
-    const token = localStorage.getItem("token");
+    if (!token) {
+      return redirect("/login");
+    }
     const response = await fetch("http://localhost:8000/api/cart/items", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token?.value}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -83,7 +86,7 @@ const DetailPage = ({ product }) => {
             src={
               !product.images
                 ? "/images/no-image.png"
-                : `/${product.images[0].image_path}`
+                : `http://localhost:8000/storage/${product.images[0]?.image_path}`
             }
             alt="Product Image"
             ref={imageRef}
@@ -98,7 +101,7 @@ const DetailPage = ({ product }) => {
             src={
               !product.images
                 ? "/images/no-image.png"
-                : `/${product.images[0].image_path}`
+                : `http://localhost:8000/storage/${product.images[0]?.image_path}`
             }
             alt="Product Image"
             width={200}
@@ -112,7 +115,7 @@ const DetailPage = ({ product }) => {
             src={
               !product.images
                 ? "/images/no-image.png"
-                : `/${product.images[0].image_path}`
+                : `http://localhost:8000/storage/${product.images[0]?.image_path}`
             }
             alt="Product Image"
             width={200}
@@ -128,6 +131,7 @@ const DetailPage = ({ product }) => {
           {new Intl.NumberFormat("en-ID", {
             style: "currency",
             currency: "IDR",
+            minimumFractionDigits: 0,
           }).format(Number(product.price))}
         </p>
         <div className="size flex gap-6 relative items-center">

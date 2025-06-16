@@ -42,13 +42,7 @@ const NavItems = ({ isOpen = false, setIsOpen }) => {
             </a>
             <ArrowRight className="inline-block w-4.5" />
           </li>
-          <li className="location flex justify-between items-center">
-            <a href="/register" className="flex items-center">
-              <UserPlus className="inline-block mr-2 w-4.5" />
-              Daftar
-            </a>
-            <ArrowRight className="inline-block w-4.5" />
-          </li>
+
           <li className="location flex justify-between items-center">
             <a href="/about" className="flex items-center">
               <Users className="inline-block mr-2 w-4.5" />

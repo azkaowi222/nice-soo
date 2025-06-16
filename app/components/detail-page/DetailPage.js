@@ -17,7 +17,7 @@ const DetailPage = ({ product, token }) => {
   const [size, setSize] = useState(null);
   const imageRef = useRef(null);
 
-  const handleAddToCart = async (id) => {
+  const handleAddToCart = async () => {
     if (!token) {
       return redirect("/login");
     }
@@ -28,7 +28,7 @@ const DetailPage = ({ product, token }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        product_id: id,
+        product_id: product.id,
         size,
         quantity,
       }),
@@ -81,49 +81,25 @@ const DetailPage = ({ product, token }) => {
           clickable: true,
         }}
       >
-        <SwiperSlide>
-          <Image
-            src={
-              !product.images
-                ? "/images/no-image.png"
-                : `http://localhost:8000/storage/${product.images[0]?.image_path}`
-            }
-            alt="Product Image"
-            ref={imageRef}
-            priority
-            width={200}
-            height={200}
-            className="w-[90%] object-cover aspect-square mx-auto"
-          />
-        </SwiperSlide>
-        <SwiperSlide>
-          <Image
-            src={
-              !product.images
-                ? "/images/no-image.png"
-                : `http://localhost:8000/storage/${product.images[0]?.image_path}`
-            }
-            alt="Product Image"
-            width={200}
-            priority
-            height={200}
-            className="w-[90%] object-cover aspect-square mx-auto"
-          />
-        </SwiperSlide>
-        <SwiperSlide>
-          <Image
-            src={
-              !product.images
-                ? "/images/no-image.png"
-                : `http://localhost:8000/storage/${product.images[0]?.image_path}`
-            }
-            alt="Product Image"
-            width={200}
-            priority
-            height={200}
-            className="w-[90%] object-cover aspect-square mx-auto"
-          />
-        </SwiperSlide>
+        {product?.images?.map((item) => {
+          return (
+            <SwiperSlide key={item.id}>
+              <Image
+                src={
+                  !item.image_path
+                    ? "/images/no-image.png"
+                    : `http://localhost:8000/storage/${item?.image_path}`
+                }
+                alt="Product Image"
+                ref={imageRef}
+                priority
+                width={200}
+                height={200}
+                className="w-[90%] object-cover aspect-square mx-auto"
+              />
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
       <div className="details p-4 flex flex-col gap-4">
         <h3 className="text-2xl font-semibold">{product.name}</h3>
@@ -157,7 +133,7 @@ const DetailPage = ({ product, token }) => {
         <div className="btn-act flex gap-4 items-center">
           <Heart size={30} className="text-red-600 cursor-pointer" />
           <button
-            onClick={() => handleAddToCart(product.id)}
+            onClick={handleAddToCart}
             className="border border-gray-300 w-full p-2 rounded-md bg-[#585858] text-white hover:bg-[#484848] cursor-pointer"
           >
             Tambah ke Keranjang

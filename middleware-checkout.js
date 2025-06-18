@@ -1,5 +1,5 @@
 export async function checkoutMiddleware(token) {
-  const cartRes = await fetch("http://localhost:8000/api/cart", {
+  const cartRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
     headers: {
       Authorization: `Bearer ${token}`,
       accept: "application/json",

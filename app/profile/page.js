@@ -6,6 +6,7 @@ import {
   ChevronRight,
   UserRoundCog,
   Star,
+  History,
 } from "lucide-react";
 import { LogoutButton } from "../components/logout-buton/LogoutButton";
 import { cookies } from "next/headers";
@@ -15,7 +16,7 @@ import Link from "next/link";
 const Profile = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
-  const response = await fetch("http://localhost:8000/api/user", {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
     headers: {
       Authorization: `Bearer ${token.value}`,
       Accept: "application/json",
@@ -65,6 +66,16 @@ const Profile = async () => {
             <div className="flex items-center gap-2.5">
               <UserRoundCog size={20} />
               <button className="pointer-events-none">Atur Akun</button>
+            </div>
+            <ChevronRight size={20} />
+          </Link>
+          <Link
+            href="/order/history"
+            className="btn-password w-full bg-[white] shadow-md rounded-lg mt-4 flex items-center justify-between px-4 py-4"
+          >
+            <div className="flex items-center gap-2.5">
+              <History size={20} />
+              <button className="pointer-events-none">Histori Pesanan</button>
             </div>
             <ChevronRight size={20} />
           </Link>

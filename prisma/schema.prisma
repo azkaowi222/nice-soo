@@ -26,8 +26,8 @@ model cart_items {
   product_id BigInt    @db.UnsignedBigInt
   size       String?   @db.VarChar(255)
   quantity   Int
-  created_at DateTime? @db.Timestamp(0)
-  updated_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @updatedAt @db.Timestamp(0)
   carts      carts     @relation(fields: [cart_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cart_items_cart_id_foreign")
   products   products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cart_items_product_id_foreign")
 
@@ -38,8 +38,8 @@ model cart_items {
 model carts {
   id         BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
   user_id    BigInt       @unique(map: "user_id") @db.UnsignedBigInt
-  created_at DateTime?    @db.Timestamp(0)
-  updated_at DateTime?    @db.Timestamp(0)
+  created_at DateTime?    @default(now()) @db.Timestamp(0)
+  updated_at DateTime?    @updatedAt @db.Timestamp(0)
   cart_items cart_items[]
   users      users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "carts_user_id_foreign")
 
@@ -51,7 +51,7 @@ model categories {
   name       String     @db.VarChar(255)
   slug       String     @unique(map: "categories_slug_unique") @db.VarChar(255)
   created_at DateTime?  @default(now()) @db.Timestamp(0)
-  updated_at DateTime?  @default(now()) @db.Timestamp(0)
+  updated_at DateTime?  @updatedAt @db.Timestamp(0)
   products   products[]
 }
 
@@ -103,8 +103,8 @@ model order_items {
   size       String?   @db.VarChar(255)
   quantity   Int
   price      Decimal   @db.Decimal(10, 2)
-  created_at DateTime? @db.Timestamp(0)
-  updated_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @updatedAt @db.Timestamp(0)
   orders     orders    @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "order_items_order_id_foreign")
   products   products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "order_items_product_id_foreign")
 
@@ -126,8 +126,8 @@ model orders {
   payment_method    String        @db.VarChar(255)
   payment_status    String        @default("pending") @db.VarChar(255)
   payment_reference String?       @db.VarChar(255)
-  created_at        DateTime?     @db.Timestamp(0)
-  updated_at        DateTime?     @db.Timestamp(0)
+  created_at        DateTime?     @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?     @updatedAt @db.Timestamp(0)
   order_items       order_items[]
   promos            promos?       @relation(fields: [promo_id], references: [id], onUpdate: Restrict, map: "orders_promo_id_foreign")
   users             users         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "orders_user_id_foreign")
@@ -162,8 +162,8 @@ model product_images {
   product_id       BigInt    @db.UnsignedBigInt
   image_path       String    @db.VarChar(255)
   is_display_image Boolean   @default(false)
-  created_at       DateTime? @db.Timestamp(0)
-  updated_at       DateTime? @db.Timestamp(0)
+  created_at       DateTime? @default(now()) @db.Timestamp(0)
+  updated_at       DateTime? @updatedAt @db.Timestamp(0)
   products         products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "product_images_product_id_foreign")
 
   @@index([product_id], map: "product_images_product_id_foreign")
@@ -179,8 +179,8 @@ model products {
   quantity        Int
   additional_info String?          @db.Text
   rating          Decimal          @default(0.00) @db.Decimal(3, 2)
-  created_at      DateTime?        @db.Timestamp(0)
-  updated_at      DateTime?        @db.Timestamp(0)
+  created_at      DateTime?        @default(now()) @db.Timestamp(0)
+  updated_at      DateTime?        @updatedAt @db.Timestamp(0)
   cart_items      cart_items[]
   order_items     order_items[]
   product_images  product_images[]
@@ -199,8 +199,8 @@ model promos {
   end_date   DateTime  @db.Date
   max_uses   Int?
   used_count Int       @default(0)
-  created_at DateTime? @db.Timestamp(0)
-  updated_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @updatedAt @db.Timestamp(0)
   orders     orders[]
 }
 
@@ -210,8 +210,8 @@ model reviews {
   product_id BigInt    @db.UnsignedBigInt
   rating     Int
   comment    String?   @db.Text
-  created_at DateTime? @db.Timestamp(0)
-  updated_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @updatedAt @db.Timestamp(0)
   products   products  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "reviews_product_id_foreign")
   users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "reviews_user_id_foreign")
 
@@ -246,8 +246,8 @@ model users {
   birth_date        DateTime?       @db.Date
   birth_place       String?         @db.VarChar(255)
   remember_token    String?         @db.VarChar(100)
-  created_at        DateTime?       @db.Timestamp(0)
-  updated_at        DateTime?       @db.Timestamp(0)
+  created_at        DateTime?       @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?       @updatedAt @db.Timestamp(0)
   carts             carts?
   orders            orders[]
   reviews           reviews[]
@@ -261,7 +261,7 @@ model shipping_cost {
   cost        Int
   etd         String @db.VarChar(50)
   user_id     BigInt @db.UnsignedBigInt
-  users       users  @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "shipping_cost_ibfk_1")
+  users       users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "shipping_cost_ibfk_1")
 
   @@index([user_id], map: "user_id")
 }

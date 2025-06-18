@@ -9,7 +9,7 @@ export const TrashButton = ({ id }) => {
   const router = useRouter();
   const handleDelete = async () => {
     const token = localStorage.getItem("token");
-    await fetch(`http://localhost:8000/api/cart/items/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}cart/items/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

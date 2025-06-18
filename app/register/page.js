@@ -27,20 +27,23 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const response = await fetch("http://localhost:8000/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        first_name,
-        last_name,
-        email,
-        password,
-        password_confirmation: confirmpassword,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          first_name,
+          last_name,
+          email,
+          password,
+          password_confirmation: confirmpassword,
+        }),
+      }
+    );
     const { errors } = await response.json();
     setIsLoading(false);
     if (response.status !== 201) {
@@ -52,7 +55,7 @@ const Register = () => {
   };
 
   const handleLoginGoogle = async () => {
-    window.location.href = "http://localhost:8000/api/auth/google";
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
   };
 
   useEffect(() => {

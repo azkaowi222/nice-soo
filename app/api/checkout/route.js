@@ -9,7 +9,7 @@ export async function POST(req) {
   const token = cookieStore.get("token");
   const { shipping_cost } = await req.json();
   try {
-    const response = await fetch("http://localhost:8000/api/user", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
       headers: {
         Authorization: `Bearer ${token?.value}`,
         accept: "application/json",

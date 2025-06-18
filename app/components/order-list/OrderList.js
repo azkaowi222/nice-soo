@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Eye, Edit, X, Package, Truck, CheckCircle, Clock } from "lucide-react";
 
-export default function OrderList({ orders }) {
+export default function OrderList({ orders, setOrders }) {
   // const [orders, setOrders] = useState([
   //   {
   //     id: "ORD-001",
@@ -51,6 +51,7 @@ export default function OrderList({ orders }) {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateStatus, setUpdateStatus] = useState("");
+  console.log(selectedOrder);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -93,15 +94,33 @@ export default function OrderList({ orders }) {
     setIsUpdateModalOpen(true);
   };
 
-  const handleSaveUpdate = () => {
+  const handleSaveUpdate = async () => {
+    const token = localStorage.getItem("token");
     if (selectedOrder) {
-      setOrders(
-        orders.map((order) =>
-          order.id === selectedOrder.id
-            ? { ...order, status: updateStatus }
-            : order
-        )
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_ADMIN_URL}/orders/${selectedOrder.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            status: updateStatus,
+          }),
+        }
       );
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        alert("berhasil update status");
+        setOrders(
+          orders.map((order) =>
+            order.id === data.id ? { ...order, status: data.status } : order
+          )
+        );
+      }
       setIsUpdateModalOpen(false);
       setSelectedOrder(null);
       setUpdateStatus("");
@@ -128,7 +147,7 @@ export default function OrderList({ orders }) {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order ID
+                  Order Number
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Customer
@@ -155,7 +174,7 @@ export default function OrderList({ orders }) {
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      {order.id}
+                      {order.order_number}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

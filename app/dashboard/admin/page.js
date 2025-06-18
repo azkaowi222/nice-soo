@@ -61,13 +61,13 @@ export default function AdminPanel() {
               Accept: "application/json",
             },
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/orders`, {
+          fetch(`${process.env.NEXT_PUBLIC_ADMIN_URL}/orders`, {
             headers: {
               Accept: "application/json",
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/users`, {
+          fetch(`${process.env.NEXT_PUBLIC_ADMIN_URL}/users`, {
             headers: {
               Accept: "application/json",
               Authorization: `Bearer ${token}`,
@@ -79,12 +79,14 @@ export default function AdminPanel() {
         ordersResponse.json(),
         usersResponse.json(),
       ]);
+      // console.log(allProducts);
       const formattedProducts = allProducts?.map((product) => {
         return {
           id: product.id,
           name: product.name.toUpperCase(),
           price: product.price,
           stock: product.quantity,
+          category_id: product.category_id,
           category:
             product.category.name[0].toUpperCase() +
             product.category.name.slice(1),
@@ -95,8 +97,9 @@ export default function AdminPanel() {
       const formattedUsers = data?.map((user) => {
         return {
           id: user.id,
-          name: user.first_name,
+          name: `${user.first_name} ${user.last_name ?? ""}`,
           email: user.email,
+          phone: user.phone,
           role: user.is_admin ? "admin" : "customer",
           status: "active",
           orders: user.orders.length,
@@ -105,9 +108,11 @@ export default function AdminPanel() {
       });
       const formattedOrders = orderItems?.map((order) => {
         return {
-          id: order.order_number,
-          customer: order.user.first_name,
+          id: order.id,
+          order_number: order.order_number,
+          customer: `${order.user.first_name} ${order.user.last_name ?? ""}`,
           email: order.user.email,
+          phone: order.user.phone,
           total: order.total,
           status: order.status,
           date: order.created_at.split("T")[0],
@@ -144,16 +149,61 @@ export default function AdminPanel() {
 
   const handleSaveProduct = async (productData) => {
     const token = localStorage.getItem("token");
-
+    // console.log(productData);
     if (editingProduct) {
       // Update existing product
-      setProducts(
-        products.map((p) =>
-          p.id === editingProduct.id
-            ? { ...productData, id: editingProduct.id }
-            : p
-        )
-      );
+      try {
+        const formData = new FormData();
+        formData.append("category_id", editingProduct.category_id);
+        formData.append("name", productData.name);
+        formData.append("description", productData.description);
+        formData.append("price", productData.price);
+        formData.append("quantity", productData.quantity);
+        formData.append("status", productData.status);
+
+        // Handle sizes array - append each size
+        if (productData["sizes[]"] && productData["sizes[]"].length > 0) {
+          productData["sizes[]"].forEach((size) => {
+            formData.append("sizes[]", size);
+          });
+        }
+
+        // Handle images - append actual files, not the array
+        if (productData.newImageFiles && productData.newImageFiles.length > 0) {
+          productData.newImageFiles.forEach((file) => {
+            formData.append("new_images[]", file); // append File objects
+          });
+        }
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_ADMIN_URL}/products/${editingProduct.id}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+            body: formData,
+          }
+        );
+        const data = await response.json();
+        setProducts(
+          products.map((p) =>
+            p.id === data?.id
+              ? {
+                  ...productData,
+                  id: data?.id,
+                  stock: data?.quantity,
+                  category:
+                    data?.category.name[0].toUpperCase() +
+                    data?.category.name.slice(1),
+                  image: `${process.env.NEXT_PUBLIC_IMAGE_URL}/${data?.images?.[0]?.image_path}`,
+                }
+              : p
+          )
+        );
+      } catch (error) {
+        console.error(error.message);
+      }
     } else {
       // Add new product
       try {
@@ -182,7 +232,7 @@ export default function AdminPanel() {
         }
 
         const response = await fetch(
-          "http://localhost:8000/api/admin/products",
+          `${process.env.NEXT_PUBLIC_ADMIN_URL}/products`,
           {
             method: "POST",
             headers: {
@@ -196,7 +246,6 @@ export default function AdminPanel() {
 
         if (response.ok) {
           const newProduct = await response.json();
-          console.log(newProduct);
           setProducts([
             ...products,
             {
@@ -227,7 +276,15 @@ export default function AdminPanel() {
     setEditingProduct(null);
   };
 
-  const handleDeleteProduct = (id) => {
+  const handleDeleteProduct = async (id) => {
+    const token = localStorage.getItem("token");
+    await fetch(`${process.env.NEXT_PUBLIC_ADMIN_URL}/products/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    });
     if (confirm("Are you sure you want to delete this product?")) {
       setProducts(products.filter((p) => p.id !== id));
     }
@@ -255,9 +312,9 @@ export default function AdminPanel() {
           />
         );
       case "orders":
-        return <OrderList orders={orders} />;
+        return <OrderList orders={orders} setOrders={setOrders} />;
       case "users":
-        return <UserList users={users} />;
+        return <UserList users={users} setUsers={setUsers} />;
       case "settings":
         return <Settings />;
       default:
@@ -269,7 +326,7 @@ export default function AdminPanel() {
     <div className="flex h-screen bg-gray-100 -my-20">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+        <Header users={users} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
           {renderContent()}
         </main>

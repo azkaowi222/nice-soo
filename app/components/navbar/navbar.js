@@ -11,10 +11,49 @@ const Navbar = () => {
   const [isLogin, setIsLogin] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLogin(!!token);
+    const validateAuth = async () => {
+      const localToken = localStorage.getItem("token");
+
+      if (!localToken) {
+        setIsLogin(false);
+        return;
+      }
+
+      try {
+        // Validasi token langsung ke backend
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/get-token`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        const { token } = await response.json();
+        if (token) {
+          setIsLogin(true);
+        } else {
+          localStorage.clear();
+          setIsLogin(false);
+        }
+      } catch (error) {
+        console.error("Error validating auth:", error);
+        // Network error - bisa tetap anggap login atau tidak
+        // Tergantung preferensi UX Anda
+        setIsLogin(false);
+      }
+    };
+
+    validateAuth();
+
+    // Periodic check untuk handle token expiry
+    // const interval = setInterval(validateAuth, 5 * 60 * 1000); // 5 menit
+
+    // return () => clearInterval(interval);
   }, []);
+
   if (isLogin === null) return null;
+
   return (
     <Navbox>
       <div className="hidden md:block">

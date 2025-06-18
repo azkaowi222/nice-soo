@@ -1,6 +1,9 @@
 "use client";
 
-export default function Header() {
+export default function Header({ users }) {
+  const adminUser = users?.find((user) => {
+    return user.role === "admin";
+  });
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -20,7 +23,7 @@ export default function Header() {
               A
             </div>
             <span className="text-sm font-medium text-gray-700">
-              Admin User
+              {adminUser?.name}
             </span>
           </div>
         </div>

@@ -21,7 +21,7 @@ const ChangePass = () => {
     e.preventDefault();
     setIsLoading(true);
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:8000/api/password", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/password`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

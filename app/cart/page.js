@@ -13,7 +13,7 @@ const Cart = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
 
-  const response = await fetch("http://localhost:8000/api/cart", {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
     headers: {
       Authorization: `Bearer ${token?.value}`,
       accept: "application/json",
@@ -56,7 +56,7 @@ const Cart = async () => {
                     <div className="item-box flex gap-4">
                       <div className="img-box w-[120px] border-b-2 border-t-2 border-gray-300 flex items-center rounded-md">
                         <Image
-                          src={`http://localhost:8000/storage/${item?.product?.images?.[0]?.image_path}`}
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${item?.product?.images?.[0]?.image_path}`}
                           width={0}
                           height={0}
                           layout="responsive"

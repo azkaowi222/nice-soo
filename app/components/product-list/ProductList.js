@@ -2,6 +2,7 @@
 import Image from "next/image";
 
 export default function ProductList({ products, onEdit, onDelete, onAdd }) {
+  // console.log(products);
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -78,7 +79,11 @@ export default function ProductList({ products, onEdit, onDelete, onAdd }) {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    Rp {product?.price.toLocaleString()}
+                    {new Intl.NumberFormat("id-ID", {
+                      currency: "IDR",
+                      maximumFractionDigits: 0,
+                      style: "currency",
+                    }).format(product?.price)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <span

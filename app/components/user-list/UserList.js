@@ -1,7 +1,7 @@
 import { Edit, Trash, MoreHorizontal, X } from "lucide-react";
 import { useState } from "react";
 
-export default function UserList({ users }) {
+export default function UserList({ users, setUsers }) {
   // const [users, setUsers] = useState([
   //   {
   //     id: 1,
@@ -54,7 +54,34 @@ export default function UserList({ users }) {
     setShowMoreMenu(null);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
+    console.log(editForm);
+    const token = localStorage.getItem("token");
+    const lastName = [];
+    const fullName = editForm.name.split(" ");
+    for (let i = 1; i <= fullName.length; i++) {
+      lastName.push(fullName[i]);
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_ADMIN_URL}/users/${editForm.id}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          first_name: editForm.name.split(" ")[0],
+          last_name: lastName.join(" "),
+          email: editForm.email,
+          is_admin: editForm.role === "customer" ? false : true,
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
     setUsers(
       users?.map((user) =>
         user.id === editForm.id
@@ -77,10 +104,18 @@ export default function UserList({ users }) {
     setEditForm({ id: null, name: "", email: "", role: "", status: "" });
   };
 
-  const handleDelete = (userId) => {
+  const handleDelete = async (userId) => {
+    const token = localStorage.getItem("token");
     if (window.confirm("Apakah Anda yakin ingin menghapus user ini?")) {
       setUsers(users.filter((user) => user.id !== userId));
     }
+    await fetch(`${process.env.NEXT_PUBLIC_ADMIN_URL}/users/${userId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    });
     setShowMoreMenu(null);
   };
 
@@ -196,13 +231,17 @@ export default function UserList({ users }) {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-50 transition-colors"
-                        title="Delete user"
-                      >
-                        <Trash className="w-4 h-4" />
-                      </button>
+                      {user?.role !== "admin" && (
+                        <>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-50 transition-colors"
+                            title="Delete user"
+                          >
+                            <Trash className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
                       <button
                         onClick={() => toggleMoreMenu(user.id)}
                         className="text-gray-600 hover:text-gray-800 p-1 rounded-md hover:bg-gray-50 transition-colors"
@@ -210,7 +249,6 @@ export default function UserList({ users }) {
                       >
                         <MoreHorizontal className="w-4 h-4" />
                       </button>
-
                       {showMoreMenu === user.id && (
                         <div className="absolute right-0 top-8 z-10 bg-white border border-gray-200 rounded-md shadow-lg py-1 w-48">
                           <button

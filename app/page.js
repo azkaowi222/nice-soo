@@ -1,12 +1,13 @@
 import TopSlider from "./components/top-slider/slider";
 import Category from "./components/category-product/Category";
 import NewProduct from "./components/new-product/NewProduct";
-import products from "./lib/products";
 import TopNavbar from "./components/navbar/top-nav/TopNav";
 import Navbar from "./components/navbar/Navbar";
 const Home = async () => {
-  const data = await products();
-  if (!data) return null;
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
+    cache: "no-store",
+  });
+  const data = await response.json();
   return (
     <div>
       <TopNavbar />

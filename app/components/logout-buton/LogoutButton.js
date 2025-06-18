@@ -7,7 +7,7 @@ export const LogoutButton = () => {
   const handleLogOut = async () => {
     setIsLoading(true);
     const token = localStorage.getItem("token");
-    await fetch("http://localhost:8000/api/logout", {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
       method: "POST",
       credentials: "include",
       headers: {

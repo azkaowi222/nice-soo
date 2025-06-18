@@ -14,25 +14,28 @@ import { redirect } from "next/navigation";
 const DetailPage = ({ product, token }) => {
   const [imageWidth, setImageWidth] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [size, setSize] = useState(null);
+  const [size, setSize] = useState("XL");
   const imageRef = useRef(null);
 
   const handleAddToCart = async () => {
     if (!token) {
       return redirect("/login");
     }
-    const response = await fetch("http://localhost:8000/api/cart/items", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token?.value}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        product_id: product.id,
-        size,
-        quantity,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/cart/items`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token?.value}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          product_id: product.id,
+          size,
+          quantity,
+        }),
+      }
+    );
     if (response.status !== 200) {
       return alert("produk gagal ditambahkan");
     }
@@ -88,7 +91,7 @@ const DetailPage = ({ product, token }) => {
                 src={
                   !item.image_path
                     ? "/images/no-image.png"
-                    : `http://localhost:8000/storage/${item?.image_path}`
+                    : `${process.env.NEXT_PUBLIC_IMAGE_URL}/${item?.image_path}`
                 }
                 alt="Product Image"
                 ref={imageRef}
@@ -122,7 +125,7 @@ const DetailPage = ({ product, token }) => {
             id="ukuran"
             onChange={(e) => setSize(e.target.value)}
           >
-            <option value="pilih">Pilih ukuran</option>
+            <option value="XL">Pilih ukuran</option>
             <option value="S">S</option>
             <option value="M">M</option>
             <option value="L">L</option>
@@ -142,7 +145,11 @@ const DetailPage = ({ product, token }) => {
         <hr className="border-gray-300" />
         <h2>Kategori: {product.category.name}</h2>
       </div>
-      <Tabs />
+      <Tabs
+        description={product.description}
+        reviews={product.reviews}
+        id={product.id}
+      />
     </div>
   );
 };

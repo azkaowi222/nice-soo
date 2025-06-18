@@ -110,47 +110,6 @@ const InfoProfile = () => {
     setLisSubdistrict(data);
   };
 
-  // const listProvince = [
-  //   "Aceh",
-  //   "Sumatera Utara",
-  //   "Sumatera Barat",
-  //   "Riau",
-  //   "Kepulauan Riau",
-  //   "Jambi",
-  //   "Sumatera Selatan",
-  //   "Bangka Belitung",
-  //   "Bengkulu",
-  //   "Lampung",
-  //   "DKI Jakarta",
-  //   "Jawa Barat",
-  //   "Banten",
-  //   "Jawa Tengah",
-  //   "DI Yogyakarta",
-  //   "Jawa Timur",
-  //   "Bali",
-  //   "Nusa Tenggara Barat",
-  //   "Nusa Tenggara Timur",
-  //   "Kalimantan Barat",
-  //   "Kalimantan Tengah",
-  //   "Kalimantan Selatan",
-  //   "Kalimantan Timur",
-  //   "Kalimantan Utara",
-  //   "Sulawesi Utara",
-  //   "Gorontalo",
-  //   "Sulawesi Tengah",
-  //   "Sulawesi Barat",
-  //   "Sulawesi Selatan",
-  //   "Sulawesi Tenggara",
-  //   "Maluku",
-  //   "Maluku Utara",
-  //   "Papua Barat",
-  //   "Papua Barat Daya",
-  //   "Papua",
-  //   "Papua Tengah",
-  //   "Papua Pegunungan",
-  //   "Papua Selatan",
-  // ].sort();
-
   const handleBirthDateChange = (e) => {
     setBirthDate(e.target.value);
   };
@@ -158,7 +117,7 @@ const InfoProfile = () => {
   const handleSave = async (isRef = true) => {
     setIsShowOverlay(false);
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:8000/api/profile", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

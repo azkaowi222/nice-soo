@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 import { ChevronLeft } from "react-feather";
 
-const Title = ({ title, center = true, hasIcon = false }) => {
+const Title = ({ title, center = true, hasIcon = false, backTo = "/cart" }) => {
   return (
     <div
       className={`${
@@ -10,7 +10,7 @@ const Title = ({ title, center = true, hasIcon = false }) => {
       } items-center gap-3 px-2 py-5 shadow-md bg-white`}
     >
       {hasIcon && (
-        <Link href={"/cart"}>
+        <Link href={backTo}>
           <ChevronLeft />
         </Link>
       )}

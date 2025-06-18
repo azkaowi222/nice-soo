@@ -5,7 +5,7 @@ export async function POST(req) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
   try {
-    const response = await fetch("http://localhost:8000/api/user", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
       headers: {
         Authorization: `Bearer ${token?.value}`,
         accept: "application/json",

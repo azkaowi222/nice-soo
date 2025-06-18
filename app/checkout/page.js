@@ -4,23 +4,27 @@ import { ChevronRight, MapPin } from "react-feather";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { Delivery } from "@/app/components/delivery/Delivery";
+import { redirect } from "next/navigation";
+import getUser from "../utils/getUser";
 
 const Checkout = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
   let user, cartItems, shipping, subtotal;
+  const address = await isAddresFilled(token);
+  if (!address) redirect("/profile/info-profile");
 
   try {
     const [userResponse, cartItemsResponse, shippingResponse] =
       await Promise.all([
-        fetch("http://localhost:8000/api/user", {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
           headers: {
             Authorization: `Bearer ${token.value}`,
             Accept: "application/json",
           },
           cache: "no-store",
         }),
-        fetch("http://localhost:8000/api/cart", {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${token?.value}`,
@@ -46,7 +50,7 @@ const Checkout = async () => {
     );
     // console.log(cartItems, shipping);
   } catch (error) {
-    console.error(`Error message: ${error?.message}`);
+    console.error(`Error message: ${error}`);
     return (
       <div className="h-screen flex items-center, justify-center">
         <p>Ada yang error: {error?.message}</p>
@@ -76,7 +80,7 @@ const Checkout = async () => {
               <div className="item-box flex gap-4 px-4">
                 <div className="img-box w-[120px] border-b-2 border-t-2 border-gray-300 flex items-center rounded-md">
                   <Image
-                    src={`http://localhost:8000/storage/${item?.product?.images?.[0]?.image_path}`}
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${item?.product?.images?.[0]?.image_path}`}
                     width={0}
                     height={0}
                     layout="responsive"
@@ -128,7 +132,7 @@ const Checkout = async () => {
             id="nameOfOrder"
             className="border-2 p-3 w-full bg-white"
             required
-            value={user?.first_name ?? "Customer"}
+            value={`${user?.first_name}` ?? "Customer"}
             readOnly
           ></input>
           <label
@@ -313,6 +317,17 @@ const Checkout = async () => {
       {/* <Loader isLoading={isLoading} /> */}
     </div>
   );
+};
+
+const isAddresFilled = async (token) => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+    headers: {
+      Authorization: `Bearer ${token.value}`,
+      Accept: "application/json",
+    },
+  });
+  const { address } = await response.json();
+  return address;
 };
 
 export default Checkout;

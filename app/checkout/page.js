@@ -31,7 +31,7 @@ const Checkout = async () => {
           },
           cache: "no-store",
         }),
-        fetch("http://localhost:3000/api/shipping", {
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/shipping`, {
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${token?.value}`,

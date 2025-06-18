@@ -13,7 +13,7 @@ const middleware = async (req) => {
   if (req.nextUrl.pathname.startsWith("/dashboard")) {
     if (!admin) {
       return NextResponse.redirect(
-        new URL("http://localhost:3000/login"),
+        new URL(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/login`),
         req.url
       );
     }
@@ -24,7 +24,10 @@ const middleware = async (req) => {
     }
     const cartsLength = await checkoutMiddleware(token);
     if (cartsLength <= 0) {
-      return NextResponse.redirect(new URL("http://localhost:3000/"), req.url);
+      return NextResponse.redirect(
+        new URL(process.env.NEXT_PUBLIC_BACKEND_API_URL),
+        req.url
+      );
     }
     return NextResponse.next();
   }
@@ -33,7 +36,10 @@ const middleware = async (req) => {
     (token && req.nextUrl.pathname === "/login") ||
     (token && req.nextUrl.pathname === "/register")
   ) {
-    return NextResponse.redirect(new URL("http://localhost:3000/"), req.url);
+    return NextResponse.redirect(
+      new URL(process.env.NEXT_PUBLIC_BACKEND_API_URL),
+      req.url
+    );
   }
 
   if (response.status !== 200 && req.nextUrl.pathname !== "/login") {
@@ -41,7 +47,7 @@ const middleware = async (req) => {
       return NextResponse.next();
     }
     return NextResponse.redirect(
-      new URL("http://localhost:3000/login"),
+      new URL(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/login`),
       req.url
     );
   }

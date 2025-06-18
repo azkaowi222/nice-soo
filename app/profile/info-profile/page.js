@@ -81,14 +81,17 @@ const InfoProfile = () => {
 
   const storeShipping = async (data) => {
     try {
-      await fetch("http://localhost:3000/api/shipping/add-shipping", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ data }),
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/shipping/add-shipping`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ data }),
+        }
+      );
     } catch (error) {
       console.error(error);
     }
@@ -525,15 +528,18 @@ const InfoProfile = () => {
   useEffect(() => {
     if (!subdistrictValue) return;
     const calculateCost = async () => {
-      const response = await fetch("http://localhost:3000/api/shipping", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          subdisctrict: subdistrictValue,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/shipping`,
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            subdisctrict: subdistrictValue,
+          }),
+        }
+      );
       const {
         data: [firstItem, secondItem, thirdItem],
       } = await response.json();

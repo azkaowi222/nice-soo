@@ -14,18 +14,22 @@ export const Delivery = ({ shipping, subtotal }) => {
   const handleCheckout = async () => {
     try {
       setIsLoading(true);
+      console.log(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/checkout`);
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-          accept: "application/json", // jika pakai auth token
-        },
-        body: JSON.stringify({
-          shipping_cost: selectedShipping?.cost,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/checkout`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            accept: "application/json", // jika pakai auth token
+          },
+          body: JSON.stringify({
+            shipping_cost: selectedShipping?.cost,
+          }),
+        }
+      );
 
       const { transaction, message } = await response.json();
       setIsLoading(false);

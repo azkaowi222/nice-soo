@@ -5,10 +5,12 @@ import Navbox from "./nav-box/Navbox";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import Loader from "../loader/Loader";
 
 const Navbar = () => {
   const pathname = usePathname();
   const [isLogin, setIsLogin] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const validateAuth = async () => {
@@ -57,7 +59,11 @@ const Navbar = () => {
   return (
     <Navbox>
       <div className="hidden md:block">
-        <Link href="/" className="logo flex items-center">
+        <Link
+          onClick={() => setIsLoading(true)}
+          href="/"
+          className="logo flex items-center"
+        >
           <Image
             className="md:w-20 w-18 aspect-square object-cover cursor-pointer md:block"
             src={"/images/niceso-tp.png"}
@@ -75,6 +81,7 @@ const Navbar = () => {
       <ul className="nav-links flex md:gap-10 gap-3 w-full md:w-auto justify-around">
         <li className="flex items-center">
           <Link
+            onClick={() => setIsLoading(true)}
             href="/"
             className={`text-sm md:text-base flex flex-col md:flex-row items-center justify-center ${
               pathname === "/" ? "text-red-500" : "text-black"
@@ -86,6 +93,7 @@ const Navbar = () => {
         </li>
         <li className="flex items-center">
           <Link
+            onClick={() => setIsLoading(true)}
             href="/cart"
             className={`text-sm md:text-base flex flex-col md:flex-row items-center justify-center ${
               pathname === "/cart" ? "text-red-500" : "text-black"
@@ -97,6 +105,7 @@ const Navbar = () => {
         </li>
         <li className="flex items-center">
           <Link
+            onClick={() => setIsLoading(true)}
             href="/promo"
             className={`text-sm md:text-base flex flex-col md:flex-row items-center justify-center ${
               pathname === "/promo" ? "text-red-500" : "text-black"
@@ -109,6 +118,7 @@ const Navbar = () => {
         <li className="flex items-center">
           {!isLogin ? (
             <Link
+              onClick={() => setIsLoading(true)}
               href="/login"
               className={`text-sm md:text-base flex flex-col md:flex-row items-center justify-center ${
                 pathname === "/login" ? "text-red-500" : "text-black"
@@ -119,6 +129,7 @@ const Navbar = () => {
             </Link>
           ) : (
             <Link
+              onClick={() => setIsLoading(true)}
               href="/profile"
               className={`text-sm md:text-base flex flex-col md:flex-row items-center justify-center ${
                 pathname === "/profile" ? "text-red-500" : "text-black"
@@ -130,6 +141,7 @@ const Navbar = () => {
           )}
         </li>
       </ul>
+      <Loader isLoading={isLoading} />
     </Navbox>
   );
 };
